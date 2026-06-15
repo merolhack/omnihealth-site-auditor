@@ -1,0 +1,21 @@
+# Normalise line endings: LF in the repo, regardless of contributor OS.
+* text=auto eol=lf
+
+# Shell scripts must stay LF or they break in CI.
+*.sh text eol=lf
+
+# Treat binaries as binary.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.zip binary
+*.mo binary
+
+# Files that never need to ship in a `git archive` export.
+/.github       export-ignore
+/tests         export-ignore
+/bin           export-ignore
+/.wp-env.json  export-ignore
+/docker-compose.yml export-ignore
+/.docker       export-ignore

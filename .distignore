@@ -9,6 +9,7 @@
 /.gitignore
 /.gitattributes
 /.editorconfig
+/README.md
 
 # WordPress.org assets live here and are deployed separately (banner/icon/screenshots)
 /.wordpress-org

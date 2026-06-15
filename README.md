@@ -1,0 +1,87 @@
+# OmniHealth: Deep Site Auditor
+
+A **headless-first** WordPress diagnostic engine featuring **22+ proactive probes** for
+performance, security, and DB health — extensible to 48+ via REST API and custom filters.
+
+[![PHPUnit](https://github.com/merolhack/omnihealth-site-auditor/actions/workflows/tests.yml/badge.svg)](https://github.com/merolhack/omnihealth-site-auditor/actions/workflows/tests.yml)
+![WordPress 6.3+](https://img.shields.io/badge/WordPress-6.3%2B-blue)
+![PHP 7.4+](https://img.shields.io/badge/PHP-7.4%2B-blue)
+![License GPL-2.0+](https://img.shields.io/badge/license-GPL--2.0%2B-green)
+
+OmniHealth runs read-only probes across performance, security, deliverability and
+database health, assigns each a severity tier, rolls them up into a worst-of verdict,
+and exposes the result where automation can consume it: a token-gated REST report, a
+daily cron with email alerts, and a categorized admin dashboard.
+
+## How is it different from core's Site Health?
+
+WordPress core's **Tools → Site Health** is an *on-demand, admin-only* status screen
+plus a static debug dump. OmniHealth is built for **continuous, automated,
+machine-readable monitoring and auditing**:
+
+- **Headless / API-first** — a no-auth `/ping` liveness probe and a token-gated
+  `/report` JSON endpoint (HTTP `503` on a failing verdict) for uptime monitors / CI.
+- **Scheduled + alerting** — daily WP-Cron run that emails the admin on a fail verdict.
+- **Severity tiers + worst-of verdict** — a single green/red signal.
+- **Probes core does not run** — TLS certificate-expiry countdown, `.env`/secret web
+  exposure, a web-root stray-backup scanner, baseline security headers, forced-HTTPS,
+  XML-RPC exposure, default-`admin` detection, SPF + DMARC email DNS, homepage
+  indexability, and database-bloat checks.
+- **Pluggable + configurable** — register your own probes via `ohsa_registered_checks`
+  and tune every threshold with filters.
+
+## Compatibility
+
+No plugin dependencies. Runs on single-site or multisite, **with or without**
+WooCommerce, page builders, or a backup plugin. Optional PHP functions are guarded and
+degrade to a neutral skip rather than erroring. The backup probe is backup-agnostic —
+report any backup solution (plugin, host, or off-site) via `ohsa_last_backup_timestamp`.
+
+## Install
+
+Upload to `wp-content/plugins/`, or **Plugins → Add New → Upload Plugin** with a ZIP,
+then activate. Configure at **Tools → OmniHealth: Deep Site Auditor**.
+
+## Extend it
+
+```php
+add_filter( 'ohsa_registered_checks', function ( array $checks ) {
+    $checks['my_queue_backlog'] = array(
+        'label'    => 'Job queue backlog',
+        'group'    => 'Performance',
+        'tier'     => 2,
+        'callback' => function () {
+            $pending = my_count_pending_jobs();
+            return $pending > 1000
+                ? array( 'status' => 'warn', 'detail' => "$pending jobs pending" )
+                : array( 'status' => 'pass', 'detail' => "$pending jobs pending" );
+        },
+    );
+    return $checks;
+} );
+```
+
+A callback returns `array( 'status' => 'pass'|'warn'|'fail', 'detail' => '…' )`.
+
+## Development
+
+```bash
+# Automated tests (Docker + Node) — mirrors CI
+npm -g install @wordpress/env
+wp-env start
+wp-env run tests-cli --env-cwd=wp-content/plugins/omnihealth-site-auditor vendor/bin/phpunit
+
+# …or the classic route
+composer install
+bin/install-wp-tests.sh wordpress_test root '' localhost
+composer test
+
+# Manual multi-version testing — three browsable installs
+docker compose up -d   # WP 6.7/PHP 8.3 :8083, 6.4/8.1 :8081, 6.3/7.4 :8074
+```
+
+CI runs PHPUnit across PHP 7.4 / 8.0 / 8.2 / 8.3.
+
+## License
+
+[GPL-2.0-or-later](LICENSE).
