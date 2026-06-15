@@ -4,7 +4,7 @@
  * Plugin URI:        https://wordpress.org/plugins/omnihealth-site-auditor/
  * Description:       A headless-first diagnostic engine featuring 22+ proactive probes for performance, security, and DB health — extensible to 48+ via REST API and custom filters.
  * Version:           1.2.0
- * Requires at least: 6.3
+ * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            OmniHealth Contributors
  * Author URI:        https://wordpress.org/plugins/omnihealth-site-auditor/

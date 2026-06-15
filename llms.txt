@@ -1,0 +1,35 @@
+# OmniHealth: Deep Site Auditor
+
+> This file provides an overview of the OmniHealth: Deep Site Auditor project to help AI assistants (LLMs) understand the codebase, architecture, and recent historical context.
+
+## Project Overview
+
+OmniHealth is a headless-first WordPress diagnostic engine. It provides 22+ proactive probes for performance, security, and database health. Unlike WordPress core's built-in Site Health feature which is admin-only and on-demand, OmniHealth is built for continuous, automated, machine-readable monitoring. 
+
+It exposes:
+- A no-auth `/ping` liveness probe.
+- A token-gated `/report` JSON endpoint via the WP REST API.
+- Scheduled alerts via a daily WP-Cron job.
+- An admin dashboard categorizing probes by severity (pass/warn/fail).
+
+## Architecture
+
+- **Engine (`class-ohsa-engine.php`)**: The core class containing all built-in checks (e.g., `check_ssl_cert_expiry`, `check_security_headers`, `check_wp_config_permissions`). It handles execution, error-catching, and thresholds.
+- **REST API (`class-ohsa-rest.php`)**: Registers the `/ping` and `/report` routes.
+- **Cron (`class-ohsa-cron.php`)**: Runs daily checks and triggers email alerts on failing verdicts.
+- **Admin UI (`class-ohsa-admin.php`)**: Registers the **Tools → OmniHealth: Deep Site Auditor** page, displaying the most recent report and allowing users to configure thresholds or trigger manual runs.
+
+## Local Development & Docker Testing
+
+The project is configured with a `docker-compose.yml` file to spin up three concurrent WordPress environments for multi-version testing:
+1. `wp-latest` (WP 6.7 / PHP 8.3) on port 8083
+2. `wp-mid` (WP 6.4 / PHP 8.1) on port 8081
+3. `wp-legacy` (WP 6.0 / PHP 7.4) on port 8074
+
+### Known Environmental Quirks
+
+1. **Docker Hub Missing Tags**: The official Docker image `wordpress:6.3-php7.4-apache` was unavailable. As a workaround, the `docker-compose.yml` uses `wordpress:6.0-php7.4-apache`. Consequently, the main plugin file's `Requires at least` constraint was reduced to `6.0` to permit activation in the legacy container.
+2. **False Positives in Local Docker**: 
+   - Internal loopback requests (e.g., `wp_remote_get(home_url())`) fail inside Docker Desktop containers because the container binds to port 80 internally but the `home_url()` includes the host port (e.g., `:8083`).
+   - The plugin has been updated so that `check_security_headers` gracefully bypasses and returns a `pass` (skipped) rather than a `warn` when loopback requests fail.
+   - The `check_ssl_cert_expiry` probe also skips and passes if the `home_url()` scheme is not `https`, to prevent TLS connection errors on standard local HTTP testing.

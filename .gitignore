@@ -12,3 +12,7 @@
 # Editor cruft
 *.bak
 *.map
+
+# Testing and scratch files
+test*.php
+report_*.txt

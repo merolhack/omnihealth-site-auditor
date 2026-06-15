@@ -77,7 +77,7 @@ bin/install-wp-tests.sh wordpress_test root '' localhost
 composer test
 
 # Manual multi-version testing — three browsable installs
-docker compose up -d   # WP 6.7/PHP 8.3 :8083, 6.4/8.1 :8081, 6.3/7.4 :8074
+docker compose up -d   # WP 6.7/PHP 8.3 :8083, 6.4/8.1 :8081, 6.0/7.4 :8074
 ```
 
 CI runs PHPUnit across PHP 7.4 / 8.0 / 8.2 / 8.3.
