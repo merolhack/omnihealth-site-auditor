@@ -105,9 +105,31 @@ register_activation_hook( __FILE__, 'ohsa_activate' );
 register_deactivation_hook( __FILE__, 'ohsa_deactivate' );
 
 /**
- * On activation: schedule the daily cron, seed default settings + a token.
+ * On activation: verify the environment, then schedule the daily cron and seed
+ * default settings + a token.
+ *
+ * This is a lightweight requirements gate — NOT the unit-test suite. The PHPUnit
+ * tests run in CI / locally via `composer test`, never on a production server.
  */
 function ohsa_activate() {
+	// Requirements gate: bail cleanly rather than fataling later.
+	if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
+		deactivate_plugins( plugin_basename( __FILE__ ) );
+		wp_die(
+			esc_html__( 'OmniHealth: Deep Site Auditor requires PHP 7.4 or newer. The plugin was not activated.', 'omnihealth-site-auditor' ),
+			esc_html__( 'Plugin activation error', 'omnihealth-site-auditor' ),
+			array( 'back_link' => true )
+		);
+	}
+	if ( ! class_exists( 'OHSA_Engine' ) ) {
+		deactivate_plugins( plugin_basename( __FILE__ ) );
+		wp_die(
+			esc_html__( 'OmniHealth: Deep Site Auditor could not load its engine. The plugin was not activated.', 'omnihealth-site-auditor' ),
+			esc_html__( 'Plugin activation error', 'omnihealth-site-auditor' ),
+			array( 'back_link' => true )
+		);
+	}
+
 	if ( ! wp_next_scheduled( OHSA_CRON_HOOK ) ) {
 		wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', OHSA_CRON_HOOK );
 	}

@@ -155,6 +155,23 @@ returns only a tiny liveness payload with no sensitive data.
 The probes are read-only. The plugin stores only its own options (settings, last
 report, token) and reads log files solely from standard WordPress locations.
 
+= Is it tested? =
+
+Yes. It ships with a PHPUnit suite built on the WordPress core test framework
+(`WP_UnitTestCase`) covering the check registry, the worst-of verdict aggregation,
+defensive execution of a throwing/malformed check, the settings filters, the
+backup-recency filter, and the REST routes (public `/ping`, token-gated `/report`,
+and the 503-on-fail behaviour). Tests run in CI and locally via `composer test`
+(see `bin/install-wp-tests.sh`); they are excluded from the distributed package and
+never run on a live site. Activation performs only a lightweight requirements gate
+(PHP version + engine load), not the test suite.
+
+== Development ==
+
+`composer install` then `bin/install-wp-tests.sh wordpress_test root '' localhost`
+and `composer test`. A GitHub Actions workflow runs the suite across PHP
+7.4 / 8.0 / 8.2 / 8.3.
+
 == Screenshots ==
 
 1. The admin report grouped by category with the summary box.

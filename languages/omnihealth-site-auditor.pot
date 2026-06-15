@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-15 03:59+0000\n"
+"POT-Creation-Date: 2026-06-15 04:33+0000\n"
 "X-Generator: ohsa-makepot 1.0\n"
 "X-Domain: omnihealth-site-auditor\n"
 
@@ -374,6 +374,14 @@ msgstr ""
 msgid "OmniHealth: Deep Site Auditor"
 msgstr ""
 
+#: omnihealth-site-auditor.php:127
+msgid "OmniHealth: Deep Site Auditor could not load its engine. The plugin was not activated."
+msgstr ""
+
+#: omnihealth-site-auditor.php:119
+msgid "OmniHealth: Deep Site Auditor requires PHP 7.4 or newer. The plugin was not activated."
+msgstr ""
+
 #: includes/class-ohsa-engine.php:599
 msgid "Only %s free on the WordPress volume."
 msgstr ""
@@ -416,6 +424,10 @@ msgstr ""
 
 #: includes/class-ohsa-engine.php:678
 msgid "Persistent object cache round-trip OK."
+msgstr ""
+
+#: omnihealth-site-auditor.php:120 omnihealth-site-auditor.php:128
+msgid "Plugin activation error"
 msgstr ""
 
 #: includes/class-ohsa-engine.php:222
