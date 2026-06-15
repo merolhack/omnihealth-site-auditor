@@ -24,6 +24,9 @@ class Test_OHSA_Engine extends WP_UnitTestCase {
 	public function tear_down() {
 		remove_all_filters( 'ohsa_registered_checks' );
 		remove_all_filters( 'ohsa_last_backup_timestamp' );
+		remove_all_filters( 'pre_http_request' );
+		delete_site_transient( 'update_core' );
+		delete_site_transient( 'update_plugins' );
 		parent::tear_down();
 	}
 
@@ -272,5 +275,124 @@ class Test_OHSA_Engine extends WP_UnitTestCase {
 		// it must never report a world-readable failure here.
 		$result = $this->engine->check_wp_config_permissions();
 		$this->assertContains( $result['status'], array( 'pass', 'warn' ), $result['detail'] );
+	}
+
+	public function test_orphaned_tables_clean_install() {
+		// A bare WP install has only core tables, so nothing should be flagged.
+		$result = $this->engine->check_orphaned_tables();
+		$this->assertContains( $result['status'], array( 'pass', 'warn' ), $result['detail'] );
+	}
+
+	public function test_core_update_available_fails_on_same_branch() {
+		$current = get_bloginfo( 'version' );
+		$parts   = explode( '.', $current );
+		$branch  = $parts[0] . '.' . ( isset( $parts[1] ) ? $parts[1] : '0' );
+		$offered = $branch . '.999';
+
+		set_site_transient(
+			'update_core',
+			(object) array(
+				'updates'      => array(
+					(object) array(
+						'response' => 'upgrade',
+						'current'  => $offered,
+						'version'  => $offered,
+						'locale'   => 'en_US',
+					),
+				),
+				'last_checked' => time(),
+			)
+		);
+
+		$result = $this->engine->check_core_update_available();
+		$this->assertSame( 'fail', $result['status'], $result['detail'] );
+	}
+
+	public function test_core_update_pass_when_latest() {
+		set_site_transient(
+			'update_core',
+			(object) array(
+				'updates'      => array(
+					(object) array(
+						'response' => 'latest',
+						'current'  => get_bloginfo( 'version' ),
+					),
+				),
+				'last_checked' => time(),
+			)
+		);
+
+		$result = $this->engine->check_core_update_available();
+		$this->assertSame( 'pass', $result['status'], $result['detail'] );
+	}
+
+	public function test_plugin_updates_pass_when_none_pending() {
+		set_site_transient(
+			'update_plugins',
+			(object) array(
+				'response'     => array(),
+				'no_update'    => array(),
+				'last_checked' => time(),
+			)
+		);
+
+		$result = $this->engine->check_plugin_updates_pending();
+		$this->assertSame( 'pass', $result['status'], $result['detail'] );
+	}
+
+	public function test_user_enumeration_warns_when_exposed() {
+		add_filter(
+			'pre_http_request',
+			static function ( $pre, $args, $url ) {
+				if ( false !== strpos( $url, 'author=1' ) ) {
+					return array(
+						'response' => array( 'code' => 301, 'message' => '' ),
+						'headers'  => array( 'location' => home_url( '/author/admin/' ) ),
+						'body'     => '',
+					);
+				}
+				if ( false !== strpos( $url, '/wp/v2/users' ) ) {
+					return array(
+						'response' => array( 'code' => 200, 'message' => '' ),
+						'headers'  => array(),
+						'body'     => wp_json_encode( array( array( 'id' => 1, 'slug' => 'admin' ) ) ),
+					);
+				}
+				return $pre;
+			},
+			10,
+			3
+		);
+
+		$result = $this->engine->check_user_enumeration_blocked();
+		$this->assertSame( 'warn', $result['status'], $result['detail'] );
+	}
+
+	public function test_user_enumeration_pass_when_blocked() {
+		add_filter(
+			'pre_http_request',
+			static function ( $pre, $args, $url ) {
+				if ( false !== strpos( $url, 'author=1' ) ) {
+					return array(
+						'response' => array( 'code' => 200, 'message' => '' ),
+						'headers'  => array(),
+						'body'     => 'home',
+					);
+				}
+				if ( false !== strpos( $url, '/wp/v2/users' ) ) {
+					return array(
+						'response' => array( 'code' => 401, 'message' => '' ),
+						'headers'  => array(),
+						'body'     => wp_json_encode( array( 'code' => 'rest_user_cannot_view' ) ),
+					);
+				}
+				return $pre;
+			},
+			10,
+			3
+		);
+
+		$result = $this->engine->check_user_enumeration_blocked();
+		$this->assertSame( 'pass', $result['status'], $result['detail'] );
 	}
 }

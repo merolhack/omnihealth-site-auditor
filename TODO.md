@@ -34,8 +34,9 @@ SEO / Performance / Environment, including: `db_connection`, `https_home`,
   the literal `put your unique phrase here` placeholders. (tier 2)
 - [ ] **P2 `file_editing_disabled`** — recommend `DISALLOW_FILE_EDIT` (and flag
   `DISALLOW_FILE_MODS` awareness). (tier 3)
-- [ ] **P2 `user_enumeration_blocked`** — `?author=1` does not 301 to `/author/<login>/`
-  and `GET /wp-json/wp/v2/users` doesn't leak logins to anonymous requests. (tier 3)
+- [x] **P2 `user_enumeration_blocked`** — *(done in v1.2.0)* `?author=1` does not 301 to
+  `/author/<login>/` and `GET /wp-json/wp/v2/users` doesn't leak logins to anonymous
+  requests. (tier 3)
 - [ ] **P2 `directory_listing_off`** — a known directory (e.g. `/wp-content/uploads/`)
   does not return an Apache/nginx autoindex. (tier 3)
 - [ ] **P2 `force_ssl_admin`** — `FORCE_SSL_ADMIN` is on when the site is HTTPS. (tier 3)
@@ -51,9 +52,9 @@ SEO / Performance / Environment, including: `db_connection`, `https_home`,
   (`posts`, `postmeta`, `options`, `users`, `usermeta`, `terms`, `term_taxonomy`,
   `term_relationships`, `termmeta`, `comments`, `commentmeta`, plus multisite tables when
   applicable). **fail** on any missing. (group: Database, tier 1)
-- [ ] **P2 `orphaned_tables`** — list non-core tables whose prefix-stripped name maps to
-  no active plugin (heuristic, filterable allow-list via `ohsa_known_tables`); warn with
-  count + total size so leftovers from removed plugins are visible. (tier 4)
+- [x] **P2 `orphaned_tables`** — *(done in v1.2.0)* lists non-core tables (filterable
+  allow-list via `ohsa_known_tables`, warn threshold via `ohsa_orphan_tables_warn`,
+  multisite other-blog tables skipped) so leftovers from removed plugins are visible. (tier 4)
 - [ ] **P2 `table_storage_engine`** — flag any MyISAM tables (recommend InnoDB). (tier 4)
 - [ ] **P2 `table_collation`** — flag tables not on `utf8mb4` (mojibake / emoji risk). (tier 4)
 - [ ] **P3 `largest_tables`** — report the top N tables by size + total DB size, with a
@@ -62,11 +63,10 @@ SEO / Performance / Environment, including: `db_connection`, `https_home`,
 
 ## New probes — Updates & Versioning
 
-- [ ] **P1 `core_update_available`** — WP core has a pending update; **fail** if it is a
-  security/minor release, warn otherwise. (headless complement to core Site Health;
-  group: Environment, tier 2)
-- [ ] **P1 `plugin_updates_pending`** — count of plugins with updates; warn, and **fail**
-  if any are flagged as security updates. (tier 2)
+- [x] **P1 `core_update_available`** — *(done in v1.2.0)* **fail** on a same-branch
+  (maintenance/security) update, warn on a feature/major update. (Environment, tier 2)
+- [x] **P1 `plugin_updates_pending`** — *(done in v1.2.0)* warn with the count of plugins
+  with pending updates (reads the update cache, read-only). (tier 2)
 - [ ] **P2 `theme_updates_pending`** — same for themes. (tier 3)
 - [ ] **P2 `inactive_plugins_themes`** — many deactivated plugins/themes = dormant attack
   surface; informational warn over a filterable threshold. (tier 4)

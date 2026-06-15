@@ -4,7 +4,7 @@ Tags: monitoring, site health, security, rest api, uptime
 Requires at least: 6.3
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,20 +56,22 @@ re-pointed at automation, alerting, and security/ops auditing.
 
 = Built-in probes =
 
-OmniHealth ships **25 built-in probes**, grouped by functional category:
+OmniHealth ships **29 built-in probes**, grouped by functional category:
 
 * **Availability** — database connectivity, homepage HTTPS reachability.
 * **Security** — `.env` not web-accessible (HTTP) and not exposed on disk,
   web-root stray/backup file scan, TLS certificate expiry, baseline security
   headers, forced HTTPS, XML-RPC exposure, no default `admin` user,
-  wp-config.php permissions, error-display off.
+  wp-config.php permissions, user-enumeration exposure, error-display off.
 * **Errors** — error-log size, recent PHP fatal errors.
-* **Database** — core tables present, autoloaded-options size, database bloat.
+* **Database** — core tables present, non-core/orphaned tables, autoloaded-options
+  size, database bloat.
 * **Files** — free disk space, uploads-directory writability, recent backup.
 * **Email** — SPF + DMARC DNS records for the sending domain.
 * **SEO** — homepage is indexable (not noindex).
 * **Performance** — PHP memory limit, persistent object cache.
-* **Environment** — supported PHP version.
+* **Environment** — supported PHP version, WordPress core update available,
+  plugin updates pending.
 
 = Extend it with your own checks =
 
@@ -109,6 +111,9 @@ A callback returns `array( 'status' => 'pass'|'warn'|'fail', 'detail' => '…' )
 * `ohsa_backup_plugins` — list of backup-plugin basenames recognised by presence.
 * `ohsa_max_expired_transients`, `ohsa_max_revisions`, `ohsa_max_spam_comments` —
   database-bloat thresholds.
+* `ohsa_known_tables` — full table names to treat as expected (silences the
+  non-core/orphaned-tables probe for legitimate plugin tables).
+* `ohsa_orphan_tables_warn` — non-core table count above which the probe warns.
 * `ohsa_sending_domain` — domain used for the SPF/DMARC lookup.
 
 = Compatibility =
@@ -193,6 +198,12 @@ mounted. See `docker-compose.yml` for details.
 
 == Changelog ==
 
+= 1.2.0 =
+* Add 4 probes: WordPress core update available, plugin updates pending, user
+  enumeration exposure (`?author=N` + REST users), and non-core/orphaned database
+  tables (filterable via `ohsa_known_tables` / `ohsa_orphan_tables_warn`). Total
+  built-in probes: 29.
+
 = 1.1.0 =
 * Add 3 security/database probes: `.env` file detected on disk (with permission
   check), wp-config.php permissions, and core database tables present. Total
@@ -206,6 +217,9 @@ mounted. See `docker-compose.yml` for details.
   `/report` REST endpoints.
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+Adds update/version, user-enumeration, and orphaned-table probes (29 total).
 
 = 1.1.0 =
 Adds three new security/database probes (.env on disk, wp-config.php permissions,

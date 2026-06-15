@@ -348,6 +348,30 @@ class OHSA_Engine {
 				'tier'     => 1,
 				'callback' => array( $this, 'check_core_tables_present' ),
 			),
+			'orphaned_tables'         => array(
+				'label'    => __( 'Non-core database tables', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Database', 'omnihealth-site-auditor' ),
+				'tier'     => 4,
+				'callback' => array( $this, 'check_orphaned_tables' ),
+			),
+			'core_update_available'   => array(
+				'label'    => __( 'WordPress core up to date', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Environment', 'omnihealth-site-auditor' ),
+				'tier'     => 2,
+				'callback' => array( $this, 'check_core_update_available' ),
+			),
+			'plugin_updates_pending'  => array(
+				'label'    => __( 'Plugin updates', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Environment', 'omnihealth-site-auditor' ),
+				'tier'     => 2,
+				'callback' => array( $this, 'check_plugin_updates_pending' ),
+			),
+			'user_enumeration'        => array(
+				'label'    => __( 'User enumeration not exposed', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'tier'     => 3,
+				'callback' => array( $this, 'check_user_enumeration_blocked' ),
+			),
 		);
 
 		return array_merge( $core, $checks );
@@ -1311,6 +1335,215 @@ class OHSA_Engine {
 		return array(
 			'status' => 'pass',
 			'detail' => __( 'Homepage is indexable.', 'omnihealth-site-auditor' ),
+		);
+	}
+
+	/**
+	 * Non-core tables for this prefix — surfaces leftovers from removed plugins.
+	 * Low-noise: informational (pass) up to a filterable threshold; excludes
+	 * other-blog tables on multisite and anything allow-listed via
+	 * `ohsa_known_tables`.
+	 *
+	 * @return array
+	 */
+	public function check_orphaned_tables() {
+		global $wpdb;
+
+		$prefix = $wpdb->prefix;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$all = $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $prefix ) . '%' ) );
+		if ( empty( $all ) ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'No tables found for this prefix; skipped.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		$expected = array(
+			$wpdb->posts,
+			$wpdb->postmeta,
+			$wpdb->options,
+			$wpdb->users,
+			$wpdb->usermeta,
+			$wpdb->terms,
+			$wpdb->term_taxonomy,
+			$wpdb->term_relationships,
+			$wpdb->termmeta,
+			$wpdb->comments,
+			$wpdb->commentmeta,
+		);
+		if ( is_multisite() ) {
+			foreach ( array( 'blogs', 'blogmeta', 'signups', 'site', 'sitemeta', 'registration_log' ) as $prop ) {
+				if ( ! empty( $wpdb->$prop ) ) {
+					$expected[] = $wpdb->$prop;
+				}
+			}
+		}
+		/**
+		 * Filter full table names to treat as expected (e.g. active-plugin tables).
+		 *
+		 * @param string[] $known Full table names to exclude from the orphan list.
+		 */
+		$expected = array_merge( $expected, (array) apply_filters( 'ohsa_known_tables', array() ) );
+
+		$orphans = array();
+		foreach ( $all as $table ) {
+			if ( in_array( $table, $expected, true ) ) {
+				continue;
+			}
+			// On multisite, skip other blogs' tables (prefix + digits + "_").
+			if ( is_multisite() && preg_match( '/^' . preg_quote( $prefix, '/' ) . '\d+_/', $table ) ) {
+				continue;
+			}
+			$orphans[] = $table;
+		}
+
+		$count = count( $orphans );
+		if ( 0 === $count ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'No non-core tables for this prefix.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		$sample    = implode( ', ', array_slice( $orphans, 0, 8 ) );
+		$threshold = (int) apply_filters( 'ohsa_orphan_tables_warn', 40 );
+		if ( $count > $threshold ) {
+			/* translators: 1: count, 2: sample table names */
+			return array(
+				'status' => 'warn',
+				'detail' => sprintf( __( '%1$d non-core tables (sample: %2$s) — review for leftovers from removed plugins; allow-list expected ones via the ohsa_known_tables filter.', 'omnihealth-site-auditor' ), $count, $sample ),
+			);
+		}
+		/* translators: 1: count, 2: sample table names */
+		return array(
+			'status' => 'pass',
+			'detail' => sprintf( __( '%1$d non-core tables present (likely active plugins): %2$s', 'omnihealth-site-auditor' ), $count, $sample ),
+		);
+	}
+
+	/**
+	 * WordPress core has no pending update. A same-branch (maintenance/security)
+	 * update is a fail; a feature (major) update is a warn.
+	 *
+	 * @return array
+	 */
+	public function check_core_update_available() {
+		if ( ! function_exists( 'get_core_updates' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/update.php';
+		}
+		$updates = function_exists( 'get_core_updates' ) ? get_core_updates() : false;
+		if ( empty( $updates ) || ! is_array( $updates ) ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'WordPress core is up to date (or no update data yet).', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		$offer = null;
+		foreach ( $updates as $update ) {
+			if ( isset( $update->response ) && 'upgrade' === $update->response ) {
+				$offer = $update;
+				break;
+			}
+		}
+		if ( null === $offer ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'WordPress core is up to date.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		$current = get_bloginfo( 'version' );
+		$offered = '';
+		if ( isset( $offer->current ) ) {
+			$offered = (string) $offer->current;
+		} elseif ( isset( $offer->version ) ) {
+			$offered = (string) $offer->version;
+		}
+
+		$cur_branch = implode( '.', array_slice( explode( '.', $current ), 0, 2 ) );
+		$off_branch = '' !== $offered ? implode( '.', array_slice( explode( '.', $offered ), 0, 2 ) ) : '';
+
+		if ( '' !== $offered && $cur_branch === $off_branch ) {
+			/* translators: 1: current version, 2: offered version */
+			return array(
+				'status' => 'fail',
+				'detail' => sprintf( __( 'A WordPress maintenance/security update is available (%1$s → %2$s) — apply it promptly.', 'omnihealth-site-auditor' ), $current, $offered ),
+			);
+		}
+		/* translators: 1: current version, 2: offered version */
+		return array(
+			'status' => 'warn',
+			'detail' => sprintf( __( 'A WordPress feature update is available (%1$s → %2$s).', 'omnihealth-site-auditor' ), $current, '' !== $offered ? $offered : __( 'newer', 'omnihealth-site-auditor' ) ),
+		);
+	}
+
+	/**
+	 * Count of plugins with a pending update (read-only; reads the update cache).
+	 *
+	 * @return array
+	 */
+	public function check_plugin_updates_pending() {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		if ( ! function_exists( 'get_plugin_updates' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/update.php';
+		}
+		$updates = function_exists( 'get_plugin_updates' ) ? get_plugin_updates() : array();
+		$count   = is_array( $updates ) ? count( $updates ) : 0;
+
+		if ( 0 === $count ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'All plugins are up to date.', 'omnihealth-site-auditor' ),
+			);
+		}
+		return array(
+			'status' => 'warn',
+			/* translators: %d: number of plugins */
+			'detail' => sprintf( _n( '%d plugin update is pending.', '%d plugin updates are pending.', $count, 'omnihealth-site-auditor' ), $count ),
+		);
+	}
+
+	/**
+	 * User enumeration is not trivially exposed via `?author=N` redirects or the
+	 * anonymous REST users endpoint.
+	 *
+	 * @return array
+	 */
+	public function check_user_enumeration_blocked() {
+		$timeout = (int) apply_filters( 'ohsa_http_timeout', 8 );
+		$issues  = array();
+
+		$author = wp_remote_get( home_url( '/?author=1' ), array( 'timeout' => $timeout, 'redirection' => 0 ) );
+		if ( ! is_wp_error( $author ) ) {
+			$code     = (int) wp_remote_retrieve_response_code( $author );
+			$location = (string) wp_remote_retrieve_header( $author, 'location' );
+			if ( in_array( $code, array( 301, 302 ), true ) && false !== stripos( $location, '/author/' ) ) {
+				$issues[] = __( '?author=N reveals usernames', 'omnihealth-site-auditor' );
+			}
+		}
+
+		$rest = wp_remote_get( home_url( '/wp-json/wp/v2/users' ), array( 'timeout' => $timeout ) );
+		if ( ! is_wp_error( $rest ) && 200 === (int) wp_remote_retrieve_response_code( $rest ) ) {
+			$body = json_decode( (string) wp_remote_retrieve_body( $rest ), true );
+			if ( is_array( $body ) && ! empty( $body ) && isset( $body[0]['slug'] ) ) {
+				$issues[] = __( 'the REST users endpoint lists accounts', 'omnihealth-site-auditor' );
+			}
+		}
+
+		if ( empty( $issues ) ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'User enumeration is not trivially exposed.', 'omnihealth-site-auditor' ),
+			);
+		}
+		/* translators: %s: semicolon-separated list of exposure vectors */
+		return array(
+			'status' => 'warn',
+			'detail' => sprintf( __( 'User enumeration possible: %s.', 'omnihealth-site-auditor' ), implode( '; ', $issues ) ),
 		);
 	}
 
