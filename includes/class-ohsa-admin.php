@@ -299,7 +299,8 @@ class OHSA_Admin {
 			}
 			$color = ( $pass === $total ) ? '#16a34a' : '#d97706';
 			printf(
-				'<span style="padding:6px 10px;border:1px solid #dcdcde;border-left:4px solid %1$s;border-radius:4px;font-size:13px;">%2$s <strong>%3$d/%4$d</strong></span>',
+				'<a href="#ohsa-group-%1$s" style="padding:6px 10px;border:1px solid #dcdcde;border-left:4px solid %2$s;border-radius:4px;font-size:13px;text-decoration:none;color:inherit;box-shadow:none;">%3$s <strong>%4$d/%5$d</strong></a>',
+				esc_attr( sanitize_title( $group ) ),
 				esc_attr( $color ),
 				esc_html( $group ),
 				(int) $pass,
@@ -320,7 +321,7 @@ class OHSA_Admin {
 				}
 			);
 
-			echo '<h3>' . esc_html( $group ) . '</h3>';
+			echo '<h3 id="ohsa-group-' . esc_attr( sanitize_title( $group ) ) . '" style="scroll-margin-top:40px;">' . esc_html( $group ) . '</h3>';
 			echo '<table class="widefat striped"><thead><tr>'
 				. '<th>' . esc_html__( 'Status', 'omnihealth-site-auditor' ) . '</th>'
 				. '<th>' . esc_html__( 'Check', 'omnihealth-site-auditor' ) . '</th>'
