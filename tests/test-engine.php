@@ -390,4 +390,77 @@ class Test_OHSA_Engine extends WP_UnitTestCase {
 		$result = $this->engine->check_user_enumeration_blocked();
 		$this->assertSame( 'pass', $result['status'], $result['detail'] );
 	}
+
+	public function test_db_overhead_pass() {
+		// Fresh test DB will naturally have almost 0 overhead.
+		$result = $this->engine->check_db_overhead();
+		$this->assertSame( 'pass', $result['status'], $result['detail'] );
+	}
+
+	public function test_core_tables_present_pass() {
+		// Test framework installs core tables.
+		$result = $this->engine->check_core_tables_present();
+		$this->assertSame( 'pass', $result['status'], $result['detail'] );
+	}
+
+	public function test_security_headers_pass() {
+		add_filter(
+			'pre_http_request',
+			static function ( $pre, $args, $url ) {
+				return array(
+					'response' => array( 'code' => 200, 'message' => 'OK' ),
+					'headers'  => array(
+						'strict-transport-security' => 'max-age=31536000',
+						'x-content-type-options'    => 'nosniff',
+						'x-frame-options'           => 'SAMEORIGIN',
+					),
+					'body'     => '',
+				);
+			},
+			10,
+			3
+		);
+
+		$result = $this->engine->check_security_headers();
+		$this->assertSame( 'pass', $result['status'], $result['detail'] );
+	}
+
+	public function test_https_forced_pass() {
+		add_filter(
+			'pre_http_request',
+			static function ( $pre, $args, $url ) {
+				return array(
+					'response' => array( 'code' => 301, 'message' => 'Moved Permanently' ),
+					'headers'  => array(
+						'location' => 'https://example.org/',
+					),
+					'body'     => '',
+				);
+			},
+			10,
+			3
+		);
+
+		$result = $this->engine->check_https_forced();
+		$this->assertSame( 'pass', $result['status'], $result['detail'] );
+	}
+
+	public function test_stray_files_pass() {
+		add_filter(
+			'pre_http_request',
+			static function ( $pre, $args, $url ) {
+				// Simulate 404 for all sensitive files.
+				return array(
+					'response' => array( 'code' => 404, 'message' => 'Not Found' ),
+					'headers'  => array(),
+					'body'     => '',
+				);
+			},
+			10,
+			3
+		);
+
+		$result = $this->engine->check_stray_files();
+		$this->assertSame( 'pass', $result['status'], $result['detail'] );
+	}
 }

@@ -118,8 +118,8 @@ class OHSA_Admin {
 			$out[ $key ] = max( 0.0, min( 100000.0, $value ) );
 		}
 
-		$email               = isset( $input['alert_email'] ) ? sanitize_email( $input['alert_email'] ) : '';
-		$out['alert_email']  = is_email( $email ) ? $email : (string) get_option( 'admin_email' );
+		$email              = isset( $input['alert_email'] ) ? sanitize_email( $input['alert_email'] ) : '';
+		$out['alert_email'] = is_email( $email ) ? $email : (string) get_option( 'admin_email' );
 
 		return $out;
 	}
@@ -224,15 +224,18 @@ class OHSA_Admin {
 		fputcsv( $output, array( 'Group', 'Label', 'ID', 'Tier', 'Status', 'Duration (ms)', 'Detail' ) );
 
 		foreach ( $report['checks'] as $id => $check ) {
-			fputcsv( $output, array(
-				isset( $check['group'] ) ? $check['group'] : '',
-				isset( $check['label'] ) ? $check['label'] : '',
-				$id,
-				isset( $check['tier'] ) ? $check['tier'] : '',
-				isset( $check['status'] ) ? $check['status'] : '',
-				isset( $check['duration_ms'] ) ? $check['duration_ms'] : '',
-				isset( $check['detail'] ) ? wp_strip_all_tags( $check['detail'] ) : '',
-			) );
+			fputcsv(
+				$output,
+				array(
+					isset( $check['group'] ) ? $check['group'] : '',
+					isset( $check['label'] ) ? $check['label'] : '',
+					$id,
+					isset( $check['tier'] ) ? $check['tier'] : '',
+					isset( $check['status'] ) ? $check['status'] : '',
+					isset( $check['duration_ms'] ) ? $check['duration_ms'] : '',
+					isset( $check['detail'] ) ? wp_strip_all_tags( $check['detail'] ) : '',
+				)
+			);
 		}
 		fclose( $output );
 		exit;
@@ -337,13 +340,13 @@ class OHSA_Admin {
 		// Bucket by group.
 		$buckets = array();
 		foreach ( $report['checks'] as $id => $check ) {
-			$group = isset( $check['group'] ) ? (string) $check['group'] : __( 'Other', 'omnihealth-site-auditor' );
+			$group                    = isset( $check['group'] ) ? (string) $check['group'] : __( 'Other', 'omnihealth-site-auditor' );
 			$buckets[ $group ][ $id ] = $check;
 		}
 
 		// Order: known groups first, then extras alphabetically.
-		$order   = OHSA_Engine::group_order();
-		$extras  = array_diff( array_keys( $buckets ), $order );
+		$order  = OHSA_Engine::group_order();
+		$extras = array_diff( array_keys( $buckets ), $order );
 		sort( $extras );
 		$ordered = array_merge( array_intersect( $order, array_keys( $buckets ) ), $extras );
 

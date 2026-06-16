@@ -890,7 +890,13 @@ class OHSA_Engine {
 	 */
 	public function check_env_file_exposed() {
 		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
-		$response = wp_remote_get( home_url( '/.env?ohsa=' . time() ), array( 'timeout' => $timeout, 'redirection' => 0 ) );
+		$response = wp_remote_get(
+			home_url( '/.env?ohsa=' . time() ),
+			array(
+				'timeout'     => $timeout,
+				'redirection' => 0,
+			)
+		);
 		if ( is_wp_error( $response ) ) {
 			return array(
 				'status' => 'pass',
@@ -954,7 +960,7 @@ class OHSA_Engine {
 			'/\.(bak|old|orig|save|swp|swo|sql|tar|tgz|zip|gz|copy|tmp)$/i',
 			'/^(phpinfo|info|adminer|shell|wso|c99)\.php$/i',
 		);
-		$hits = array();
+		$hits     = array();
 		foreach ( $entries as $name ) {
 			if ( '.' === $name || '..' === $name ) {
 				continue;
@@ -1006,7 +1012,7 @@ class OHSA_Engine {
 	 * @return array
 	 */
 	public function check_ssl_cert_expiry() {
-		$host = wp_parse_url( home_url(), PHP_URL_HOST );
+		$host   = wp_parse_url( home_url(), PHP_URL_HOST );
 		$scheme = wp_parse_url( home_url(), PHP_URL_SCHEME );
 		if ( 'https' !== $scheme ) {
 			return array(
@@ -1144,7 +1150,13 @@ class OHSA_Engine {
 			);
 		}
 		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
-		$response = wp_remote_get( 'http://' . $host . '/?ohsa=' . time(), array( 'timeout' => $timeout, 'redirection' => 0 ) );
+		$response = wp_remote_get(
+			'http://' . $host . '/?ohsa=' . time(),
+			array(
+				'timeout'     => $timeout,
+				'redirection' => 0,
+			)
+		);
 		if ( is_wp_error( $response ) ) {
 			return array(
 				'status' => 'pass',
@@ -1179,7 +1191,13 @@ class OHSA_Engine {
 	 */
 	public function check_xmlrpc_status() {
 		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
-		$response = wp_remote_get( home_url( '/xmlrpc.php' ), array( 'timeout' => $timeout, 'redirection' => 0 ) );
+		$response = wp_remote_get(
+			home_url( '/xmlrpc.php' ),
+			array(
+				'timeout'     => $timeout,
+				'redirection' => 0,
+			)
+		);
 		if ( is_wp_error( $response ) ) {
 			return array(
 				'status' => 'pass',
@@ -1444,7 +1462,13 @@ class OHSA_Engine {
 			);
 		}
 		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
-		$response = wp_remote_get( home_url( '/?ohsa=' . time() ), array( 'timeout' => $timeout, 'redirection' => 2 ) );
+		$response = wp_remote_get(
+			home_url( '/?ohsa=' . time() ),
+			array(
+				'timeout'     => $timeout,
+				'redirection' => 2,
+			)
+		);
 		if ( is_wp_error( $response ) ) {
 			return array(
 				'status' => 'warn',
@@ -1651,7 +1675,13 @@ class OHSA_Engine {
 		$timeout = (int) apply_filters( 'ohsa_http_timeout', 8 );
 		$issues  = array();
 
-		$author = wp_remote_get( home_url( '/?author=1' ), array( 'timeout' => $timeout, 'redirection' => 0 ) );
+		$author = wp_remote_get(
+			home_url( '/?author=1' ),
+			array(
+				'timeout'     => $timeout,
+				'redirection' => 0,
+			)
+		);
 		if ( ! is_wp_error( $author ) ) {
 			$code     = (int) wp_remote_retrieve_response_code( $author );
 			$location = (string) wp_remote_retrieve_header( $author, 'location' );
@@ -2094,7 +2124,7 @@ class OHSA_Engine {
 		foreach ( $crons as $timestamp => $cronhooks ) {
 			if ( $timestamp < ( $now - 1800 ) ) { // 30 minutes overdue
 				foreach ( $cronhooks as $hook => $events ) {
-					$overdue++;
+					++$overdue;
 				}
 			}
 		}
@@ -2156,10 +2186,10 @@ class OHSA_Engine {
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results(
-			"SELECT TABLE_NAME as name, (DATA_LENGTH + INDEX_LENGTH) as size 
+			'SELECT TABLE_NAME as name, (DATA_LENGTH + INDEX_LENGTH) as size 
 			FROM information_schema.TABLES 
 			WHERE TABLE_SCHEMA = DATABASE() 
-			ORDER BY size DESC"
+			ORDER BY size DESC'
 		);
 
 		if ( empty( $results ) ) {
@@ -2173,7 +2203,7 @@ class OHSA_Engine {
 		$top_tables  = array();
 
 		foreach ( $results as $index => $row ) {
-			$size = (int) $row->size;
+			$size         = (int) $row->size;
 			$total_bytes += $size;
 			if ( $index < $count ) {
 				$top_tables[] = $row->name . ' (' . size_format( $size, 2 ) . ')';
@@ -2236,7 +2266,13 @@ class OHSA_Engine {
 		}
 
 		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
-		$response = wp_remote_get( home_url( '/?ohsa=' . time() ), array( 'timeout' => $timeout, 'redirection' => 2 ) );
+		$response = wp_remote_get(
+			home_url( '/?ohsa=' . time() ),
+			array(
+				'timeout'     => $timeout,
+				'redirection' => 2,
+			)
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return array(
@@ -2268,7 +2304,13 @@ class OHSA_Engine {
 	 */
 	public function check_rest_api_reachable() {
 		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
-		$response = wp_remote_get( rest_url(), array( 'timeout' => $timeout, 'redirection' => 2 ) );
+		$response = wp_remote_get(
+			rest_url(),
+			array(
+				'timeout'     => $timeout,
+				'redirection' => 2,
+			)
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return array(

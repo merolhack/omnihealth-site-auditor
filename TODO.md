@@ -111,12 +111,12 @@ SEO / Performance / Environment, including: `db_connection`, `https_home`,
 
 ## Testing / CI
 
-- [ ] **Per-probe unit tests** — extend coverage to the network/DB probes using
+- [x] **Per-probe unit tests** — extend coverage to the network/DB probes using
   `pre_http_request` mocks and `$wpdb` fixtures (security headers, https_forced,
   stray_files, db_overhead, core_tables_present).
-- [ ] **WP version matrix** — add older WP majors (6.3 … 6.7) alongside the PHP matrix.
-- [ ] **PHPCS (WordPress-Coding-Standards) + Plugin Check (PCP)** as CI gates.
-- [ ] Bump `actions/checkout` and other actions off the Node-20 deprecation warning.
+- [x] **WP version matrix** — add older WP majors (6.3 … 6.7) alongside the PHP matrix.
+- [x] **PHPCS (WordPress-Coding-Standards) + Plugin Check (PCP)** as CI gates.
+- [x] Bump `actions/checkout` and other actions off the Node-20 deprecation warning.
 
 ## Admin / UX
 
