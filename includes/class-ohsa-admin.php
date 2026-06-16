@@ -38,6 +38,8 @@ class OHSA_Admin {
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_post_ohsa_run_now', array( $this, 'handle_run_now' ) );
 		add_action( 'admin_post_ohsa_rotate_token', array( $this, 'handle_rotate_token' ) );
+		add_action( 'admin_post_ohsa_export_json', array( $this, 'handle_export_json' ) );
+		add_action( 'admin_post_ohsa_export_csv', array( $this, 'handle_export_csv' ) );
 	}
 
 	/**
@@ -182,6 +184,61 @@ class OHSA_Admin {
 	}
 
 	/**
+	 * Export the current report as JSON.
+	 */
+	public function handle_export_json() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You are not allowed to do this.', 'omnihealth-site-auditor' ) );
+		}
+		check_admin_referer( 'ohsa_export_json' );
+
+		$report = get_option( OHSA_OPTION_REPORT );
+		if ( ! is_array( $report ) ) {
+			$report = array();
+		}
+
+		header( 'Content-Type: application/json; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="omnihealth-report-' . gmdate( 'Ymd-His' ) . '.json"' );
+		echo wp_json_encode( $report, JSON_PRETTY_PRINT );
+		exit;
+	}
+
+	/**
+	 * Export the current report as CSV.
+	 */
+	public function handle_export_csv() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You are not allowed to do this.', 'omnihealth-site-auditor' ) );
+		}
+		check_admin_referer( 'ohsa_export_csv' );
+
+		$report = get_option( OHSA_OPTION_REPORT );
+		if ( ! is_array( $report ) || empty( $report['checks'] ) ) {
+			wp_die( esc_html__( 'No report available to export.', 'omnihealth-site-auditor' ) );
+		}
+
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="omnihealth-report-' . gmdate( 'Ymd-His' ) . '.csv"' );
+
+		$output = fopen( 'php://output', 'w' );
+		fputcsv( $output, array( 'Group', 'Label', 'ID', 'Tier', 'Status', 'Duration (ms)', 'Detail' ) );
+
+		foreach ( $report['checks'] as $id => $check ) {
+			fputcsv( $output, array(
+				isset( $check['group'] ) ? $check['group'] : '',
+				isset( $check['label'] ) ? $check['label'] : '',
+				$id,
+				isset( $check['tier'] ) ? $check['tier'] : '',
+				isset( $check['status'] ) ? $check['status'] : '',
+				isset( $check['duration_ms'] ) ? $check['duration_ms'] : '',
+				isset( $check['detail'] ) ? wp_strip_all_tags( $check['detail'] ) : '',
+			) );
+		}
+		fclose( $output );
+		exit;
+	}
+
+	/**
 	 * Render the admin page.
 	 */
 	public function render_page() {
@@ -212,6 +269,16 @@ class OHSA_Admin {
 					<input type="hidden" name="action" value="ohsa_run_now" />
 					<?php wp_nonce_field( 'ohsa_run_now' ); ?>
 					<button type="submit" class="button button-primary"><?php esc_html_e( 'Run now', 'omnihealth-site-auditor' ); ?></button>
+				</form>
+				<form method="post" action="<?php echo $action; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above. ?>" style="display:inline; margin-left:10px;">
+					<input type="hidden" name="action" value="ohsa_export_json" />
+					<?php wp_nonce_field( 'ohsa_export_json' ); ?>
+					<button type="submit" class="button"><?php esc_html_e( 'Export JSON', 'omnihealth-site-auditor' ); ?></button>
+				</form>
+				<form method="post" action="<?php echo $action; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above. ?>" style="display:inline; margin-left:10px;">
+					<input type="hidden" name="action" value="ohsa_export_csv" />
+					<?php wp_nonce_field( 'ohsa_export_csv' ); ?>
+					<button type="submit" class="button"><?php esc_html_e( 'Export CSV', 'omnihealth-site-auditor' ); ?></button>
 				</form>
 			</p>
 
@@ -321,18 +388,26 @@ class OHSA_Admin {
 				}
 			);
 
-			echo '<h3 id="ohsa-group-' . esc_attr( sanitize_title( $group ) ) . '" style="scroll-margin-top:40px;">' . esc_html( $group ) . '</h3>';
-			echo '<table class="widefat striped"><thead><tr>'
+			$group_id = 'ohsa-group-' . esc_attr( sanitize_title( $group ) );
+			echo '<h3 id="' . $group_id . '" style="scroll-margin-top:40px; cursor:pointer;" onclick="var t=document.getElementById(\'' . $group_id . '-table\'); t.style.display=(t.style.display===\'none\'?\'\':\'none\'); localStorage.setItem(\'' . $group_id . '\', t.style.display);">' . esc_html( $group ) . ' <span class="dashicons dashicons-arrow-down-alt2" style="font-size:16px;line-height:1.5;"></span></h3>';
+			echo '<table id="' . $group_id . '-table" class="widefat striped" style="display:table;"><thead><tr>'
 				. '<th>' . esc_html__( 'Status', 'omnihealth-site-auditor' ) . '</th>'
 				. '<th>' . esc_html__( 'Check', 'omnihealth-site-auditor' ) . '</th>'
+				. '<th>' . esc_html__( 'Tier', 'omnihealth-site-auditor' ) . '</th>'
+				. '<th>' . esc_html__( 'Time', 'omnihealth-site-auditor' ) . '</th>'
 				. '<th>' . esc_html__( 'Detail', 'omnihealth-site-auditor' ) . '</th>'
 				. '</tr></thead><tbody>';
 			foreach ( $rows as $check ) {
+				$tier = isset( $check['tier'] ) ? $check['tier'] : '-';
+				$time = isset( $check['duration_ms'] ) ? $check['duration_ms'] . 'ms' : '-';
 				echo '<tr><td><strong>' . esc_html( strtoupper( $check['status'] ) ) . '</strong></td>'
 					. '<td>' . esc_html( $check['label'] ) . '</td>'
+					. '<td>' . esc_html( $tier ) . '</td>'
+					. '<td>' . esc_html( $time ) . '</td>'
 					. '<td>' . esc_html( $check['detail'] ) . '</td></tr>';
 			}
 			echo '</tbody></table>';
+			echo '<script>if(localStorage.getItem(\'' . $group_id . '\')===\'none\'){document.getElementById(\'' . $group_id . '-table\').style.display=\'none\';}</script>';
 		}
 	}
 }

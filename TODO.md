@@ -120,7 +120,7 @@ SEO / Performance / Environment, including: `db_connection`, `https_home`,
 
 ## Admin / UX
 
-- [ ] Per-group "Run now" + last-run timestamp; remember collapsed groups.
-- [ ] Optional Slack/webhook alert channel alongside email (`ohsa_alert_channels`).
-- [ ] CSV/JSON export of the latest report from the admin page.
-- [ ] Surface each probe's `tier` and `duration_ms` in the report table.
+- [x] Per-group "Run now" + last-run timestamp; remember collapsed groups.
+- [x] Optional Slack/webhook alert channel alongside email (`ohsa_alert_channels`).
+- [x] CSV/JSON export of the latest report from the admin page.
+- [x] Surface each probe's `tier` and `duration_ms` in the report table.

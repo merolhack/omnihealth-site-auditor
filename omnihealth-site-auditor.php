@@ -3,7 +3,7 @@
  * Plugin Name:       OmniHealth: Deep Site Auditor
  * Plugin URI:        https://wordpress.org/plugins/omnihealth-site-auditor/
  * Description:       A headless-first diagnostic engine featuring 22+ proactive probes for performance, security, and DB health — extensible to 48+ via REST API and custom filters.
- * Version:           1.2.2
+ * Version:           1.2.3
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            OmniHealth Contributors
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'OHSA_VERSION', '1.2.2' );
+define( 'OHSA_VERSION', '1.2.3' );
 define( 'OHSA_PLUGIN_FILE', __FILE__ );
 define( 'OHSA_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OHSA_CRON_HOOK', 'ohsa_daily_check' );
@@ -89,20 +89,17 @@ function ohsa_run_scheduled_check() {
 	update_option( OHSA_OPTION_REPORT, $report, false );
 
 	if ( isset( $report['verdict'] ) && 'fail' === $report['verdict'] ) {
-		ohsa_send_failure_email( $report );
+		ohsa_send_failure_alerts( $report );
 	}
 }
 
 /**
- * Email the admin when the verdict is "fail". Plain-text, no external calls.
+ * Send failure alerts via email or other channels (webhooks, slack).
  *
  * @param array $report Report from OHSA_Engine::run().
  */
-function ohsa_send_failure_email( array $report ) {
-	$to = apply_filters( 'ohsa_alert_email', get_option( 'admin_email' ) );
-	if ( ! is_email( $to ) ) {
-		return;
-	}
+function ohsa_send_failure_alerts( array $report ) {
+	$channels = apply_filters( 'ohsa_alert_channels', array( 'email' ) );
 
 	/* translators: %s: site name */
 	$subject = sprintf( __( '[OmniHealth: Deep Site Auditor] Health check FAILED on %s', 'omnihealth-site-auditor' ), wp_specialchars_decode( get_bloginfo( 'name' ) ) );
@@ -124,8 +121,17 @@ function ohsa_send_failure_email( array $report ) {
 	}
 	$lines[] = '';
 	$lines[] = admin_url( 'tools.php?page=omnihealth-site-auditor' );
+	$body    = implode( "\n", $lines );
 
-	wp_mail( $to, $subject, implode( "\n", $lines ), array( 'Content-Type: text/plain; charset=UTF-8' ) );
+	if ( in_array( 'email', $channels, true ) ) {
+		$to = apply_filters( 'ohsa_alert_email', get_option( 'admin_email' ) );
+		if ( is_email( $to ) ) {
+			wp_mail( $to, $subject, $body, array( 'Content-Type: text/plain; charset=UTF-8' ) );
+		}
+	}
+
+	// Trigger hook so external plugins can send webhook/Slack alerts
+	do_action( 'ohsa_send_alerts', $report, $subject, $body, $channels );
 }
 
 register_activation_hook( __FILE__, 'ohsa_activate' );
