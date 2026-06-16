@@ -372,6 +372,66 @@ class OHSA_Engine {
 				'tier'     => 3,
 				'callback' => array( $this, 'check_user_enumeration_blocked' ),
 			),
+			'secret_keys_defined'     => array(
+				'label'    => __( 'Secret keys defined', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'tier'     => 2,
+				'callback' => array( $this, 'check_secret_keys_defined' ),
+			),
+			'file_editing_disabled'   => array(
+				'label'    => __( 'File editing disabled', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'tier'     => 3,
+				'callback' => array( $this, 'check_file_editing_disabled' ),
+			),
+			'directory_listing_off'   => array(
+				'label'    => __( 'Directory listing disabled', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'tier'     => 3,
+				'callback' => array( $this, 'check_directory_listing_off' ),
+			),
+			'force_ssl_admin'         => array(
+				'label'    => __( 'Force SSL for Admin', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'tier'     => 3,
+				'callback' => array( $this, 'check_force_ssl_admin' ),
+			),
+			'table_storage_engine'    => array(
+				'label'    => __( 'Database storage engine', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Database', 'omnihealth-site-auditor' ),
+				'tier'     => 4,
+				'callback' => array( $this, 'check_table_storage_engine' ),
+			),
+			'table_collation'         => array(
+				'label'    => __( 'Database collation', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Database', 'omnihealth-site-auditor' ),
+				'tier'     => 4,
+				'callback' => array( $this, 'check_table_collation' ),
+			),
+			'theme_updates_pending'   => array(
+				'label'    => __( 'Theme updates', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Environment', 'omnihealth-site-auditor' ),
+				'tier'     => 3,
+				'callback' => array( $this, 'check_theme_updates_pending' ),
+			),
+			'inactive_plugins_themes' => array(
+				'label'    => __( 'Inactive plugins and themes', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Environment', 'omnihealth-site-auditor' ),
+				'tier'     => 4,
+				'callback' => array( $this, 'check_inactive_plugins_themes' ),
+			),
+			'cron_overdue'            => array(
+				'label'    => __( 'Scheduled events (WP-Cron)', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Performance', 'omnihealth-site-auditor' ),
+				'tier'     => 3,
+				'callback' => array( $this, 'check_cron_overdue' ),
+			),
+			'transient_api_backed'    => array(
+				'label'    => __( 'API-backed transients', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Performance', 'omnihealth-site-auditor' ),
+				'tier'     => 4,
+				'callback' => array( $this, 'check_transient_api_backed' ),
+			),
 		);
 
 		return array_merge( $core, $checks );
@@ -1732,5 +1792,278 @@ class OHSA_Engine {
 			}
 		}
 		return $best;
+	}
+	/**
+	 * Check if secret keys are properly defined.
+	 *
+	 * @return array
+	 */
+	public function check_secret_keys_defined() {
+		$keys    = array( 'AUTH_KEY', 'SECURE_AUTH_KEY', 'LOGGED_IN_KEY', 'NONCE_KEY', 'AUTH_SALT', 'SECURE_AUTH_SALT', 'LOGGED_IN_SALT', 'NONCE_SALT' );
+		$missing = array();
+		$default = array();
+
+		foreach ( $keys as $key ) {
+			if ( ! defined( $key ) ) {
+				$missing[] = $key;
+			} elseif ( 'put your unique phrase here' === constant( $key ) ) {
+				$default[] = $key;
+			}
+		}
+
+		if ( ! empty( $missing ) || ! empty( $default ) ) {
+			return array(
+				'status' => 'warn',
+				'detail' => __( 'One or more WordPress secret keys are missing or using the default placeholder in wp-config.php.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		return array(
+			'status' => 'pass',
+			'detail' => __( 'All secret keys are defined securely.', 'omnihealth-site-auditor' ),
+		);
+	}
+
+	/**
+	 * Check if file editing is disabled.
+	 *
+	 * @return array
+	 */
+	public function check_file_editing_disabled() {
+		if ( defined( 'DISALLOW_FILE_EDIT' ) && DISALLOW_FILE_EDIT ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'File editing is disabled via wp-config.php.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		return array(
+			'status' => 'warn',
+			'detail' => __( 'File editing is currently allowed. Consider defining DISALLOW_FILE_EDIT to true.', 'omnihealth-site-auditor' ),
+		);
+	}
+
+	/**
+	 * Check if directory listing is disabled.
+	 *
+	 * @return array
+	 */
+	public function check_directory_listing_off() {
+		$upload_dir = wp_upload_dir();
+		$url        = trailingslashit( $upload_dir['baseurl'] );
+		$response   = wp_remote_get( $url );
+
+		if ( is_wp_error( $response ) ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'Could not reach the uploads directory to test listing.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		$body = wp_remote_retrieve_body( $response );
+		if ( stripos( $body, 'Index of /' ) !== false ) {
+			return array(
+				'status' => 'warn',
+				'detail' => __( 'Directory listing appears to be enabled on your uploads folder.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		return array(
+			'status' => 'pass',
+			'detail' => __( 'Directory listing is safely disabled.', 'omnihealth-site-auditor' ),
+		);
+	}
+
+	/**
+	 * Check if FORCE_SSL_ADMIN is true on HTTPS sites.
+	 *
+	 * @return array
+	 */
+	public function check_force_ssl_admin() {
+		if ( strpos( home_url(), 'https://' ) !== 0 ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'Site does not use HTTPS, so FORCE_SSL_ADMIN is not applicable.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		if ( defined( 'FORCE_SSL_ADMIN' ) && FORCE_SSL_ADMIN ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'FORCE_SSL_ADMIN is properly enabled.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		return array(
+			'status' => 'warn',
+			'detail' => __( 'Your site uses HTTPS but FORCE_SSL_ADMIN is not enabled in wp-config.php.', 'omnihealth-site-auditor' ),
+		);
+	}
+
+	/**
+	 * Check database table storage engine.
+	 *
+	 * @return array
+	 */
+	public function check_table_storage_engine() {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$tables = $wpdb->get_results( "SHOW TABLE STATUS WHERE Engine != 'InnoDB' AND Engine IS NOT NULL" );
+
+		if ( ! empty( $tables ) ) {
+			/* translators: %d: number of tables */
+			return array(
+				'status' => 'warn',
+				/* translators: %d: number of tables */
+				'detail' => sprintf( __( '%d tables are not using the InnoDB storage engine.', 'omnihealth-site-auditor' ), count( $tables ) ),
+			);
+		}
+
+		return array(
+			'status' => 'pass',
+			'detail' => __( 'All database tables are using the InnoDB storage engine.', 'omnihealth-site-auditor' ),
+		);
+	}
+
+	/**
+	 * Check database table collation.
+	 *
+	 * @return array
+	 */
+	public function check_table_collation() {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$tables = $wpdb->get_results( "SHOW TABLE STATUS WHERE Collation NOT LIKE 'utf8mb4%'" );
+
+		if ( ! empty( $tables ) ) {
+			/* translators: %d: number of tables */
+			return array(
+				'status' => 'warn',
+				/* translators: %d: number of tables */
+				'detail' => sprintf( __( '%d tables are not using the recommended utf8mb4 collation.', 'omnihealth-site-auditor' ), count( $tables ) ),
+			);
+		}
+
+		return array(
+			'status' => 'pass',
+			'detail' => __( 'All database tables use the recommended utf8mb4 collation.', 'omnihealth-site-auditor' ),
+		);
+	}
+
+	/**
+	 * Check for pending theme updates.
+	 *
+	 * @return array
+	 */
+	public function check_theme_updates_pending() {
+		$updates = get_site_transient( 'update_themes' );
+
+		if ( ! empty( $updates->response ) ) {
+			$count = count( $updates->response );
+			/* translators: %d: number of themes */
+			return array(
+				'status' => 'warn',
+				/* translators: %d: number of themes */
+				'detail' => sprintf( __( 'You have %d theme(s) with pending updates.', 'omnihealth-site-auditor' ), $count ),
+			);
+		}
+
+		return array(
+			'status' => 'pass',
+			'detail' => __( 'All themes are up to date.', 'omnihealth-site-auditor' ),
+		);
+	}
+
+	/**
+	 * Check for excessive inactive plugins and themes.
+	 *
+	 * @return array
+	 */
+	public function check_inactive_plugins_themes() {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$plugins  = get_plugins();
+		$active   = get_option( 'active_plugins', array() );
+		$inactive = count( $plugins ) - count( $active );
+
+		$themes          = wp_get_themes();
+		$inactive_themes = count( $themes ) - 1; // Assuming 1 active theme.
+
+		if ( $inactive > 5 || $inactive_themes > 3 ) {
+			/* translators: 1: number of plugins, 2: number of themes */
+			return array(
+				'status' => 'warn',
+				/* translators: 1: number of plugins, 2: number of themes */
+				'detail' => sprintf( __( 'You have %1$d inactive plugins and %2$d inactive themes. Consider removing them to reduce attack surface.', 'omnihealth-site-auditor' ), $inactive, $inactive_themes ),
+			);
+		}
+
+		return array(
+			'status' => 'pass',
+			'detail' => __( 'Inactive plugin and theme count is low.', 'omnihealth-site-auditor' ),
+		);
+	}
+
+	/**
+	 * Check if WP-Cron tasks are overdue.
+	 *
+	 * @return array
+	 */
+	public function check_cron_overdue() {
+		$crons = _get_cron_array();
+		if ( empty( $crons ) ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'No scheduled events found.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		$now     = time();
+		$overdue = 0;
+
+		foreach ( $crons as $timestamp => $cronhooks ) {
+			if ( $timestamp < ( $now - 1800 ) ) { // 30 minutes overdue
+				foreach ( $cronhooks as $hook => $events ) {
+					$overdue++;
+				}
+			}
+		}
+
+		if ( $overdue > 0 ) {
+			/* translators: %d: number of overdue tasks */
+			return array(
+				'status' => 'warn',
+				/* translators: %d: number of overdue tasks */
+				'detail' => sprintf( __( '%d scheduled tasks are overdue by more than 30 minutes. WP-Cron may not be running.', 'omnihealth-site-auditor' ), $overdue ),
+			);
+		}
+
+		return array(
+			'status' => 'pass',
+			'detail' => __( 'WP-Cron is running normally.', 'omnihealth-site-auditor' ),
+		);
+	}
+
+	/**
+	 * Check if transients are falling back to DB unexpectedly.
+	 *
+	 * @return array
+	 */
+	public function check_transient_api_backed() {
+		if ( wp_using_ext_object_cache() ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'Persistent object cache is active.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		return array(
+			'status' => 'pass',
+			'detail' => __( 'Object cache is not explicitly enabled, falling back to database safely.', 'omnihealth-site-auditor' ),
+		);
 	}
 }

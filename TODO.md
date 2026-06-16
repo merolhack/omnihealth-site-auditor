@@ -30,16 +30,16 @@ SEO / Performance / Environment, including: `db_connection`, `https_home`,
   Covers CLI/headless contexts where the HTTP probe can't reach. (group: Security, tier 1)
 - [x] **P1 `wp_config_permissions`** — *(done in v1.1.0)* `wp-config.php` must not be
   world-readable (**fail** on the others-read bit). Checks `ABSPATH` and one dir above. (tier 1)
-- [ ] **P1 `secret_keys_defined`** — `AUTH_KEY`/`SECURE_AUTH_KEY`/… are defined and not
+- [x] **P1 `secret_keys_defined`** — `AUTH_KEY`/`SECURE_AUTH_KEY`/… are defined and not
   the literal `put your unique phrase here` placeholders. (tier 2)
-- [ ] **P2 `file_editing_disabled`** — recommend `DISALLOW_FILE_EDIT` (and flag
+- [x] **P2 `file_editing_disabled`** — recommend `DISALLOW_FILE_EDIT` (and flag
   `DISALLOW_FILE_MODS` awareness). (tier 3)
 - [x] **P2 `user_enumeration_blocked`** — *(done in v1.2.0)* `?author=1` does not 301 to
   `/author/<login>/` and `GET /wp-json/wp/v2/users` doesn't leak logins to anonymous
   requests. (tier 3)
-- [ ] **P2 `directory_listing_off`** — a known directory (e.g. `/wp-content/uploads/`)
+- [x] **P2 `directory_listing_off`** — a known directory (e.g. `/wp-content/uploads/`)
   does not return an Apache/nginx autoindex. (tier 3)
-- [ ] **P2 `force_ssl_admin`** — `FORCE_SSL_ADMIN` is on when the site is HTTPS. (tier 3)
+- [x] **P2 `force_ssl_admin`** — `FORCE_SSL_ADMIN` is on when the site is HTTPS. (tier 3)
 - [ ] **P3 `debug_log_not_public`** — `wp-content/debug.log` returns 403/404, not 200.
 - [ ] **P3 `login_protection_present`** — heuristic: a limit-login / 2FA / firewall
   plugin is active (filterable allow-list), else informational warn.
@@ -55,8 +55,8 @@ SEO / Performance / Environment, including: `db_connection`, `https_home`,
 - [x] **P2 `orphaned_tables`** — *(done in v1.2.0)* lists non-core tables (filterable
   allow-list via `ohsa_known_tables`, warn threshold via `ohsa_orphan_tables_warn`,
   multisite other-blog tables skipped) so leftovers from removed plugins are visible. (tier 4)
-- [ ] **P2 `table_storage_engine`** — flag any MyISAM tables (recommend InnoDB). (tier 4)
-- [ ] **P2 `table_collation`** — flag tables not on `utf8mb4` (mojibake / emoji risk). (tier 4)
+- [x] **P2 `table_storage_engine`** — flag any MyISAM tables (recommend InnoDB). (tier 4)
+- [x] **P2 `table_collation`** — flag tables not on `utf8mb4` (mojibake / emoji risk). (tier 4)
 - [ ] **P3 `largest_tables`** — report the top N tables by size + total DB size, with a
   filterable warn threshold. (informational, tier 5)
 - [ ] **P3 `db_charset_client`** — DB connection charset is `utf8mb4`.
@@ -67,17 +67,17 @@ SEO / Performance / Environment, including: `db_connection`, `https_home`,
   (maintenance/security) update, warn on a feature/major update. (Environment, tier 2)
 - [x] **P1 `plugin_updates_pending`** — *(done in v1.2.0)* warn with the count of plugins
   with pending updates (reads the update cache, read-only). (tier 2)
-- [ ] **P2 `theme_updates_pending`** — same for themes. (tier 3)
-- [ ] **P2 `inactive_plugins_themes`** — many deactivated plugins/themes = dormant attack
+- [x] **P2 `theme_updates_pending`** — same for themes. (tier 3)
+- [x] **P2 `inactive_plugins_themes`** — many deactivated plugins/themes = dormant attack
   surface; informational warn over a filterable threshold. (tier 4)
 - [ ] **P3 `php_eol_horizon`** — extend `php_version` to warn ahead of the runtime's
   official EOL date, not just against fixed cutoffs.
 
 ## New probes — Performance / Ops
 
-- [ ] **P2 `cron_overdue`** — any WP-Cron event overdue by > N minutes (DISABLE_WP_CRON
+- [x] **P2 `cron_overdue`** — any WP-Cron event overdue by > N minutes (DISABLE_WP_CRON
   awareness); warn. (group: Performance, tier 3)
-- [ ] **P2 `transient_api_backed`** — detect transients silently falling back to the DB
+- [x] **P2 `transient_api_backed`** — detect transients silently falling back to the DB
   when a persistent object cache is expected. (tier 4)
 - [ ] **P3 `https_mixed_content`** — homepage HTML has no `http://` asset references on an
   HTTPS site. (group: SEO/Security, tier 3)

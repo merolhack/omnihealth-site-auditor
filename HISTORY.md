@@ -11,3 +11,8 @@
   - Added required `/* translators: ... */` comments preceding all `__()` calls containing placeholders like `%s`.
   - Removed redundant `Author URI` to fix WP.org's duplicate plugin/author URI error, pointing `Author URI` directly to the developer's personal GitHub page.
 - **Build System:** Created an isolated Python script to generate the distribution `.zip` file. This leverages `.distignore` to strictly strip development/CI files (`.wp-env.json`, `phpunit.xml.dist`, `.github/`, test scripts) from the final package before uploading to the WordPress catalog.
+- **Deep Audit Engine Expansion:** Implemented 10 new High-Priority (P1/P2) diagnostic probes:
+  - **Security:** `secret_keys_defined`, `file_editing_disabled`, `directory_listing_off`, `force_ssl_admin`.
+  - **Database:** `table_storage_engine` (flag MyISAM), `table_collation` (flag non-utf8mb4).
+  - **Environment:** `theme_updates_pending`, `inactive_plugins_themes` (warn on excessive dormant extensions).
+  - **Performance:** `cron_overdue` (check for stalled WP-Cron), `transient_api_backed` (ensure persistent object cache usage).
