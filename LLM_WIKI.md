@@ -1,56 +1,40 @@
 # OmniHealth Site Auditor — LLM Wiki
 
-Welcome to the internal Knowledge Base for the OmniHealth Site Auditor! This document is explicitly written to bootstrap future AI/LLM assistants entering this repository, providing them with the necessary context, architectural rules, and operational reality of the project.
+This document serves as the project's **LLM Wiki**. It contains essential context, architectural decisions, testing paradigms, and release workflows. AI agents interacting with this repository should read this file before performing modifications to ensure they adhere to the established constraints.
 
-## Project Overview
-**OmniHealth Site Auditor** is a robust, extensible diagnostic WordPress plugin designed to uncover misconfigurations, security vulnerabilities, and performance bottlenecks that standard health checks often miss.
+## 1. Core Architecture & Philosophy
+- **Headless-First:** The plugin focuses on headless, scheduled execution via `wp-cron`. It generates a JSON report that can be exported or queried via a token-gated REST API endpoint (`/wp-json/omnihealth/v1/report`).
+- **Probe Registry:** Probes are defined in `includes/class-ohsa-engine.php` and managed via a registry hook (`ohsa_registered_checks`). 
+- **Check Anatomy:** Each probe callback must return an array with `status` (`pass`, `warn`, `fail`) and `detail` (a localized human-readable string). The engine automatically appends `duration_ms` and `tier` to each executed check.
 
-It ranks probes into three tiers:
-- **Tier 1 (Critical)**: Immediate action required (e.g., exposed credentials).
-- **Tier 2 (Recommended)**: High-impact improvements (e.g., outdated software).
-- **Tier 3 (Good to have)**: Best practices and optimizations.
+## 2. i18n & Localization (CRITICAL)
+- **WP.org Compliance:** The WordPress Plugin Check (PCP) scanner is extremely strict. 
+- You MUST use `__()` or `esc_html__()` with the text domain `'omnihealth-site-auditor'`.
+- If using `sprintf()` with placeholders, you **MUST** include a `/* translators: ... */` comment **exactly** on the line preceding the string definition, otherwise PHPCS/PCP will fail.
+- **Pipeline:** `.pot` files are generated via `composer make-pot` (`wp i18n make-pot . languages/omnihealth-site-auditor.pot`). 
 
-## Core Architectural Patterns
+## 3. Environment & WSL Constraints
+- **Docker Executions:** Running composer commands directly in the WSL container often fails due to `dubious ownership` errors. Use the WordPress docker container instead:
+  ```bash
+  docker compose exec -w /var/www/html/wp-content/plugins/omnihealth-site-auditor wp-latest php /var/www/html/composer.phar <command>
+  ```
+- **Git Push Authentication:** The environment frequently hangs on interactive authentication prompts. Use the explicit PAT URL when pushing:
+  ```bash
+  git push https://merolhack:<PAT>@github.com/merolhack/omnihealth-site-auditor.git
+  ```
 
-### The `OHSA_Engine`
-All diagnostic logic is centrally processed by `includes/class-ohsa-engine.php`. 
-- You should almost never modify the UI code (`class-ohsa-admin.php`) to add new checks.
-- New checks are registered in the `$core` array inside the `register_core_checks()` method.
-- The system heavily relies on the WordPress Hook API. Probes are dynamically loaded via the `ohsa_registered_checks` filter.
+## 4. Testing & CI Pipeline
+- **PHPCS:** We enforce `WordPress-Core` coding standards, but explicitly ignore `WordPress.WP.I18n.MissingTranslatorsComment` and some pedantic docblock rules in `phpcs.xml` to reduce noise. Run `composer run phpcbf` to autofix.
+- **Unit Testing (PHPUnit):** Tests are housed in `tests/test-engine.php`. 
+  - Do **NOT** rely on external network calls for probes like `check_security_headers` or `check_stray_files`. We use the WP Core hook `pre_http_request` to mock HTTP responses in our tests.
+- **CI Workflows:** `.github/workflows/` contains three distinct workflows:
+  1. `tests.yml`: Runs PHPUnit tests across WP versions 6.3 - latest.
+  2. `code-quality.yml`: Runs PHPCS and the official `wordpress/plugin-check-action@v1`.
+  3. `deploy.yml`: Pushes tags to the WordPress.org SVN repository on release.
 
-### The Probe Interface
-A probe callback method must return an associative array exactly like this:
-```php
-return array(
-    'status' => 'warn', // Must be 'pass', 'warn', or 'fail'
-    'detail' => __( 'A clear, translated explanation.', 'omnihealth-site-auditor' ),
-);
-```
-
-### i18n Translation Rules
-The `wp plugin check` (PCP) scanner runs against this repository. It is merciless.
-- If you use `sprintf( __( 'Message with %s', 'omnihealth-site-auditor' ), $var )`...
-- You **MUST** put `/* translators: %s: what the variable is */` exactly on the line above the `sprintf`/`__` call.
-
-## Development & Testing Workflow
-
-1. **Local tests are broken**: Do NOT rely on standard `composer test` or `npm run test` inside the WSL environment. They will fail due to environment/pathing issues.
-2. **Docker is King**: The correct way to validate PCP compliance is via the running Docker container:
-   ```bash
-   docker compose exec wp-latest wp plugin check omnihealth-site-auditor --allow-root
-   ```
-3. **CI acts as the final judge**: The GitHub Actions workflow tests against PHP 7.4 through 8.3. If CI fails, your PR/commit fails.
-4. **Pushing Code**: The interactive prompt hangs the terminal. You MUST use the Personal Access Token (PAT) format to push code:
-   ```bash
-   git push https://merolhack:<PAT>@github.com/merolhack/omnihealth-site-auditor.git
-   ```
-
-## Release Workflow
-Do not blindly `zip` the directory. The plugin relies on a strict `.distignore` file. You must follow the `omnihealth-release-workflow` SKILL (which uses a Python script to respect the `.distignore`) to package the plugin properly before deployment.
-
-## Current State
-- ✅ All **P1, P2, and P3** probes from the initial specification (`TODO.md`) have been implemented and verified.
-- The UI features anchor-linked summary pills for smooth navigation.
-- The focus is now shifting towards **Engineering / release** tasks (versioning, SVN deployment to WordPress.org, data migrations).
-
-> **AI Instruction**: If you are a new agent reading this, acknowledge these rules and proceed confidently. You have everything you need!
+## 5. Release Workflow
+We use a robust Python-based zip pipeline because standard git archivers bypass `.distignore`.
+1. Run `bin/bump-version.sh <version>` to synchronize versions across headers and `readme.txt`.
+2. Update the `readme.txt` changelog manually.
+3. Generate the ZIP (using `rsync` and Python `shutil.make_archive` honoring `.distignore`).
+4. Commit, create a tag, and push. (Creating a GitHub Release with the tag triggers the SVN deployment action).
