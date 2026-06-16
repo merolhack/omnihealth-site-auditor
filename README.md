@@ -82,6 +82,11 @@ docker compose up -d   # WP 6.7/PHP 8.3 :8083, 6.4/8.1 :8081, 6.0/7.4 :8074
 
 CI runs PHPUnit across PHP 7.4 / 8.0 / 8.2 / 8.3.
 
+## AI Agents / Assistants
+
+> **Are you an AI, LLM, or coding assistant?**
+> Please read the [`LLM_WIKI.md`](LLM_WIKI.md) and the `omnihealth-architecture-rules` SKILL before making architectural changes. These documents encode the strict Plugin Check rules, environmental testing realities, and release workflows necessary to contribute to this plugin successfully.
+
 ## License
 
 [GPL-2.0-or-later](LICENSE).
