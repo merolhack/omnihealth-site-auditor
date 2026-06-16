@@ -220,8 +220,7 @@ class OHSA_Admin {
 		header( 'Content-Type: text/csv; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename="omnihealth-report-' . gmdate( 'Ymd-His' ) . '.csv"' );
 
-		$out = '';
-		$out .= '"Group","Label","ID","Tier","Status","Duration (ms)","Detail"' . "\r\n";
+		$out = '"Group","Label","ID","Tier","Status","Duration (ms)","Detail"' . "\r\n";
 
 		foreach ( $report['checks'] as $id => $check ) {
 			$row = array(
@@ -233,19 +232,21 @@ class OHSA_Admin {
 				isset( $check['duration_ms'] ) ? $check['duration_ms'] : '',
 				isset( $check['detail'] ) ? wp_strip_all_tags( $check['detail'] ) : '',
 			);
-			
+
 			// Basic CSV escaping: quote fields that contain comma, quote, or newline.
-			$escaped_row = array_map( static function ( $field ) {
-				$field = (string) $field;
-				if ( strpos( $field, '"' ) !== false || strpos( $field, ',' ) !== false || strpos( $field, "\n" ) !== false || strpos( $field, "\r" ) !== false ) {
-					$field = '"' . str_replace( '"', '""', $field ) . '"';
-				}
-				return $field;
-			}, $row );
+			$escaped_row = array_map(
+				static function ( $field ) {
+					$field = (string) $field;
+					if ( strpos( $field, '"' ) !== false || strpos( $field, ',' ) !== false || strpos( $field, "\n" ) !== false || strpos( $field, "\r" ) !== false ) {
+						$field = '"' . str_replace( '"', '""', $field ) . '"';
+					}
+					return $field;
+				},
+				$row
+			);
 
 			$out .= implode( ',', $escaped_row ) . "\r\n";
 		}
-		
 		echo $out; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSV output is safely generated above.
 		exit;
 	}
@@ -419,7 +420,7 @@ class OHSA_Admin {
 					. '<td>' . esc_html( $check['detail'] ) . '</td></tr>';
 			}
 			echo '</tbody></table>';
-			echo '<script>if(localStorage.getItem(\'' . $group_id . '\')===\'none\'){document.getElementById(\'' . $group_id . '-table\').style.display=\'none\';}</script>';
+			echo '<script>if(localStorage.getItem(\'' . esc_js( $group_id ) . '\')===\'none\'){document.getElementById(\'' . esc_js( $group_id ) . '-table\').style.display=\'none\';}</script>';
 		}
 	}
 }
