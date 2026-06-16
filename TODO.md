@@ -70,7 +70,7 @@ SEO / Performance / Environment, including: `db_connection`, `https_home`,
 - [x] **P2 `theme_updates_pending`** — same for themes. (tier 3)
 - [x] **P2 `inactive_plugins_themes`** — many deactivated plugins/themes = dormant attack
   surface; informational warn over a filterable threshold. (tier 4)
-- [ ] **P3 `php_eol_horizon`** — extend `php_version` to warn ahead of the runtime's
+- [x] **P3 `php_eol_horizon`** — extend `php_version` to warn ahead of the runtime's
   official EOL date, not just against fixed cutoffs.
 
 ## New probes — Performance / Ops

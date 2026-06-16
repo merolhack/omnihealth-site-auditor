@@ -803,25 +803,67 @@ class OHSA_Engine {
 	 * @return array
 	 */
 	public function check_php_version() {
-		$version = PHP_VERSION;
-		if ( version_compare( $version, '8.0', '<' ) ) {
-			/* translators: %s: PHP version */
+		$version     = PHP_VERSION;
+		$major_minor = implode( '.', array_slice( explode( '.', $version ), 0, 2 ) );
+
+		// Official PHP End-Of-Life dates (YYYY-MM-DD).
+		$eol_dates = array(
+			'7.4' => '2022-11-28',
+			'8.0' => '2023-11-26',
+			'8.1' => '2024-12-31',
+			'8.2' => '2025-12-31',
+			'8.3' => '2026-12-31',
+			'8.4' => '2027-12-31',
+		);
+
+		/**
+		 * Filter the number of months before EOL to warn.
+		 *
+		 * @param int $months Number of months. Default 6.
+		 */
+		$horizon_months = (int) apply_filters( 'ohsa_php_eol_horizon_months', 6 );
+
+		if ( ! isset( $eol_dates[ $major_minor ] ) ) {
+			if ( version_compare( $version, '7.4', '<' ) ) {
+				return array(
+					'status' => 'fail',
+					/* translators: %s: PHP version */
+					'detail' => sprintf( __( 'PHP %s is end-of-life — upgrade immediately.', 'omnihealth-site-auditor' ), $version ),
+				);
+			}
+
+			return array(
+				'status' => 'pass',
+				/* translators: %s: PHP version */
+				'detail' => sprintf( __( 'PHP %s is actively supported.', 'omnihealth-site-auditor' ), $version ),
+			);
+		}
+
+		$eol_time = strtotime( $eol_dates[ $major_minor ] );
+		$now      = time();
+
+		if ( $now > $eol_time ) {
 			return array(
 				'status' => 'fail',
+				/* translators: %s: PHP version */
 				'detail' => sprintf( __( 'PHP %s is end-of-life — upgrade.', 'omnihealth-site-auditor' ), $version ),
 			);
 		}
-		if ( version_compare( $version, '8.2', '<' ) ) {
-			/* translators: %s: PHP version */
+
+		// Calculate horizon (approx 30 days per month).
+		$horizon_time = $eol_time - ( $horizon_months * 30 * DAY_IN_SECONDS );
+		if ( $now > $horizon_time ) {
 			return array(
 				'status' => 'warn',
-				'detail' => sprintf( __( 'PHP %s is near end-of-life — plan an upgrade.', 'omnihealth-site-auditor' ), $version ),
+				/* translators: %s: PHP version */
+				'detail' => sprintf( __( 'PHP %s is nearing its end-of-life date — plan an upgrade.', 'omnihealth-site-auditor' ), $version ),
 			);
 		}
-		/* translators: %s: PHP version */
+
 		return array(
 			'status' => 'pass',
-			'detail' => sprintf( __( 'PHP %s is supported.', 'omnihealth-site-auditor' ), $version ),
+			/* translators: %s: PHP version */
+			'detail' => sprintf( __( 'PHP %s is fully supported.', 'omnihealth-site-auditor' ), $version ),
 		);
 	}
 
