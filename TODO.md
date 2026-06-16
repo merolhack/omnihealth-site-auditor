@@ -79,9 +79,9 @@ SEO / Performance / Environment, including: `db_connection`, `https_home`,
   awareness); warn. (group: Performance, tier 3)
 - [x] **P2 `transient_api_backed`** — detect transients silently falling back to the DB
   when a persistent object cache is expected. (tier 4)
-- [ ] **P3 `https_mixed_content`** — homepage HTML has no `http://` asset references on an
+- [x] **P3 `https_mixed_content`** — homepage HTML has no `http://` asset references on an
   HTTPS site. (group: SEO/Security, tier 3)
-- [ ] **P3 `rest_api_reachable`** — `GET /wp-json/` responds 200 (headless availability).
+- [x] **P3 `rest_api_reachable`** — `GET /wp-json/` responds 200 (headless availability).
 
 ---
 

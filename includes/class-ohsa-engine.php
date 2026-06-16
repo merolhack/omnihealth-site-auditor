@@ -330,6 +330,18 @@ class OHSA_Engine {
 				'tier'     => 3,
 				'callback' => array( $this, 'check_homepage_indexable' ),
 			),
+			'https_mixed_content'     => array(
+				'label'    => __( 'HTTPS Mixed Content', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'tier'     => 3,
+				'callback' => array( $this, 'check_https_mixed_content' ),
+			),
+			'rest_api_reachable'      => array(
+				'label'    => __( 'REST API availability', 'omnihealth-site-auditor' ),
+				'group'    => __( 'Environment', 'omnihealth-site-auditor' ),
+				'tier'     => 3,
+				'callback' => array( $this, 'check_rest_api_reachable' ),
+			),
 			'env_file_on_disk'        => array(
 				'label'    => __( '.env file not present/exposed on disk', 'omnihealth-site-auditor' ),
 				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
@@ -2207,6 +2219,77 @@ class OHSA_Engine {
 			'status' => 'warn',
 			/* translators: %s: current charset */
 			'detail' => sprintf( __( 'Database connection uses "%s", but utf8mb4 is recommended.', 'omnihealth-site-auditor' ), $charset ),
+		);
+	}
+
+	/**
+	 * Check for mixed content (HTTP resources on an HTTPS homepage).
+	 *
+	 * @return array
+	 */
+	public function check_https_mixed_content() {
+		if ( ! is_ssl() && 0 !== strpos( home_url(), 'https://' ) ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'Site does not enforce HTTPS, mixed content check skipped.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
+		$response = wp_remote_get( home_url( '/?ohsa=' . time() ), array( 'timeout' => $timeout, 'redirection' => 2 ) );
+
+		if ( is_wp_error( $response ) ) {
+			return array(
+				'status' => 'warn',
+				'detail' => __( 'Could not fetch the homepage to verify mixed content.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		$body = (string) wp_remote_retrieve_body( $response );
+
+		// Look for src="http:// or href="http://
+		if ( preg_match( '/(?:src|href)\s*=\s*["\']http:\/\/[^"\']+["\']/i', $body ) ) {
+			return array(
+				'status' => 'warn',
+				'detail' => __( 'The homepage contains hardcoded HTTP asset references (mixed content).', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		return array(
+			'status' => 'pass',
+			'detail' => __( 'No mixed content (HTTP assets) detected on the homepage.', 'omnihealth-site-auditor' ),
+		);
+	}
+
+	/**
+	 * Verify the REST API is reachable (returns HTTP 200).
+	 *
+	 * @return array
+	 */
+	public function check_rest_api_reachable() {
+		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
+		$response = wp_remote_get( rest_url(), array( 'timeout' => $timeout, 'redirection' => 2 ) );
+
+		if ( is_wp_error( $response ) ) {
+			return array(
+				'status' => 'warn',
+				'detail' => __( 'The REST API endpoint is unreachable or timing out.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		$status_code = wp_remote_retrieve_response_code( $response );
+
+		if ( 200 === $status_code ) {
+			return array(
+				'status' => 'pass',
+				'detail' => __( 'The WordPress REST API is reachable and responding normally.', 'omnihealth-site-auditor' ),
+			);
+		}
+
+		return array(
+			'status' => 'warn',
+			/* translators: %d: HTTP status code */
+			'detail' => sprintf( __( 'The REST API responded with an unexpected status code (%d).', 'omnihealth-site-auditor' ), $status_code ),
 		);
 	}
 }
