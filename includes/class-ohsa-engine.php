@@ -514,7 +514,7 @@ class OHSA_Engine {
 			)
 			: array(
 				'status' => 'fail',
-				/* translators: %d: HTTP status code */
+				// translators: %d: HTTP status code
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'Homepage returned HTTP %d.', 'omnihealth-site-auditor' ), $code ),
 			);
@@ -561,7 +561,7 @@ class OHSA_Engine {
 		$file_name = basename( $path );
 
 		if ( $bytes >= $fail ) {
-			/* translators: 1: file name, 2: human-readable size */
+			// translators: 1: file name, 2: human-readable size
 			return array(
 				'status' => 'fail',
 				// translators: 1: dynamic value
@@ -569,14 +569,14 @@ class OHSA_Engine {
 			);
 		}
 		if ( $bytes >= $warn ) {
-			/* translators: 1: file name, 2: human-readable size */
+			// translators: 1: file name, 2: human-readable size
 			return array(
 				'status' => 'warn',
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( '%1$s is %2$s — growing.', 'omnihealth-site-auditor' ), $file_name, $readable ),
 			);
 		}
-		/* translators: 1: file name, 2: human-readable size */
+		// translators: 1: file name, 2: human-readable size
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
@@ -606,7 +606,7 @@ class OHSA_Engine {
 		if ( $size > $cap ) {
 			return array(
 				'status' => 'warn',
-				/* translators: %s: human-readable size */
+				// translators: %s: human-readable size
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'Error log too large to scan (%s); inspect it manually.', 'omnihealth-site-auditor' ), size_format( $size, 2 ) ),
 			);
@@ -653,7 +653,7 @@ class OHSA_Engine {
 			return array(
 				'status' => 'warn',
 				'detail' => sprintf(
-					/* translators: 1: error count, 2: lookback hours */
+					// translators: 1: error count, 2: lookback hours
 					_n( '%1$d PHP fatal/parse error in the last %2$d h.', '%1$d PHP fatal/parse errors in the last %2$d h.', $count, 'omnihealth-site-auditor' ),
 					$count,
 					$hours
@@ -662,7 +662,7 @@ class OHSA_Engine {
 		}
 		return array(
 			'status' => 'pass',
-			/* translators: %d: lookback hours */
+			// translators: %d: lookback hours
 			// translators: 1: dynamic value
 			'detail' => sprintf( __( 'No PHP fatal/parse errors in the last %d h.', 'omnihealth-site-auditor' ), $hours ),
 		);
@@ -684,7 +684,7 @@ class OHSA_Engine {
 		$h    = size_format( $bytes, 2 );
 
 		if ( $bytes >= $fail ) {
-			/* translators: %s: human-readable size */
+			// translators: %s: human-readable size
 			return array(
 				'status' => 'fail',
 				// translators: 1: dynamic value
@@ -692,14 +692,14 @@ class OHSA_Engine {
 			);
 		}
 		if ( $bytes >= $warn ) {
-			/* translators: %s: human-readable size */
+			// translators: %s: human-readable size
 			return array(
 				'status' => 'warn',
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'Autoloaded options total %s.', 'omnihealth-site-auditor' ), $h ),
 			);
 		}
-		/* translators: %s: human-readable size */
+		// translators: %s: human-readable size
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
@@ -728,14 +728,14 @@ class OHSA_Engine {
 		}
 		$min = (float) apply_filters( 'ohsa_disk_free_min_bytes', 512 * MB_IN_BYTES );
 		if ( $free < $min ) {
-			/* translators: %s: human-readable size */
+			// translators: %s: human-readable size
 			return array(
 				'status' => 'warn',
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'Only %s free on the WordPress volume.', 'omnihealth-site-auditor' ), size_format( $free, 2 ) ),
 			);
 		}
-		/* translators: %s: human-readable size */
+		// translators: %s: human-readable size
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
@@ -778,14 +778,14 @@ class OHSA_Engine {
 		$min   = (int) apply_filters( 'ohsa_memory_min_bytes', 128 * MB_IN_BYTES );
 
 		if ( $bytes > 0 && $bytes < $min ) {
-			/* translators: %s: configured memory limit */
+			// translators: %s: configured memory limit
 			return array(
 				'status' => 'warn',
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'PHP memory_limit is %s.', 'omnihealth-site-auditor' ), $limit ),
 			);
 		}
-		/* translators: %s: configured memory limit */
+		// translators: %s: configured memory limit
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
@@ -852,7 +852,7 @@ class OHSA_Engine {
 			if ( version_compare( $version, '7.4', '<' ) ) {
 				return array(
 					'status' => 'fail',
-					/* translators: %s: PHP version */
+					// translators: %s: PHP version
 					// translators: 1: dynamic value
 					'detail' => sprintf( __( 'PHP %s is end-of-life — upgrade immediately.', 'omnihealth-site-auditor' ), $version ),
 				);
@@ -860,7 +860,7 @@ class OHSA_Engine {
 
 			return array(
 				'status' => 'pass',
-				/* translators: %s: PHP version */
+				// translators: %s: PHP version
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'PHP %s is actively supported.', 'omnihealth-site-auditor' ), $version ),
 			);
@@ -872,7 +872,7 @@ class OHSA_Engine {
 		if ( $now > $eol_time ) {
 			return array(
 				'status' => 'fail',
-				/* translators: %s: PHP version */
+				// translators: %s: PHP version
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'PHP %s is end-of-life — upgrade.', 'omnihealth-site-auditor' ), $version ),
 			);
@@ -883,7 +883,7 @@ class OHSA_Engine {
 		if ( $now > $horizon_time ) {
 			return array(
 				'status' => 'warn',
-				/* translators: %s: PHP version */
+				// translators: %s: PHP version
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'PHP %s is nearing its end-of-life date — plan an upgrade.', 'omnihealth-site-auditor' ), $version ),
 			);
@@ -891,7 +891,7 @@ class OHSA_Engine {
 
 		return array(
 			'status' => 'pass',
-			/* translators: %s: PHP version */
+			// translators: %s: PHP version
 			// translators: 1: dynamic value
 			'detail' => sprintf( __( 'PHP %s is fully supported.', 'omnihealth-site-auditor' ), $version ),
 		);
@@ -923,7 +923,7 @@ class OHSA_Engine {
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
 		if ( in_array( $code, array( 401, 403, 404 ), true ) ) {
-			/* translators: %d: HTTP status code */
+			// translators: %d: HTTP status code
 			return array(
 				'status' => 'pass',
 				// translators: 1: dynamic value
@@ -943,7 +943,7 @@ class OHSA_Engine {
 				'detail' => __( '.env returns HTTP 200 — verify it is not exposing secrets.', 'omnihealth-site-auditor' ),
 			);
 		}
-		/* translators: %d: HTTP status code */
+		// translators: %d: HTTP status code
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
@@ -1013,14 +1013,14 @@ class OHSA_Engine {
 		);
 		$sample = implode( ', ', array_slice( $hits, 0, 6 ) );
 		if ( $secret ) {
-			/* translators: 1: count, 2: sample of file names */
+			// translators: 1: count, 2: sample of file names
 			return array(
 				'status' => 'fail',
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( '%1$d stray file(s) including secret-bearing backups: %2$s', 'omnihealth-site-auditor' ), $count, $sample ),
 			);
 		}
-		/* translators: 1: count, 2: sample of file names */
+		// translators: 1: count, 2: sample of file names
 		return array(
 			'status' => 'warn',
 			// translators: 1: dynamic value
@@ -1093,7 +1093,7 @@ class OHSA_Engine {
 			);
 		}
 		if ( $days <= $fail ) {
-			/* translators: %d: days */
+			// translators: %d: days
 			return array(
 				'status' => 'fail',
 				// translators: 1: dynamic value
@@ -1101,14 +1101,14 @@ class OHSA_Engine {
 			);
 		}
 		if ( $days <= $warn ) {
-			/* translators: %d: days */
+			// translators: %d: days
 			return array(
 				'status' => 'warn',
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'TLS certificate expires in %d days.', 'omnihealth-site-auditor' ), $days ),
 			);
 		}
-		/* translators: %d: days */
+		// translators: %d: days
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
@@ -1148,7 +1148,7 @@ class OHSA_Engine {
 				'detail' => __( 'All baseline security headers are present.', 'omnihealth-site-auditor' ),
 			);
 		}
-		/* translators: %s: comma-separated header names */
+		// translators: %s: comma-separated header names
 		return array(
 			'status' => 'warn',
 			// translators: 1: dynamic value
@@ -1203,7 +1203,7 @@ class OHSA_Engine {
 				'detail' => __( 'HTTP serves 200 without redirecting to HTTPS.', 'omnihealth-site-auditor' ),
 			);
 		}
-		/* translators: %d: HTTP status code */
+		// translators: %d: HTTP status code
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
@@ -1234,7 +1234,7 @@ class OHSA_Engine {
 		$code = (int) wp_remote_retrieve_response_code( $response );
 		$body = (string) wp_remote_retrieve_body( $response );
 		if ( in_array( $code, array( 401, 403, 404 ), true ) ) {
-			/* translators: %d: HTTP status code */
+			// translators: %d: HTTP status code
 			return array(
 				'status' => 'pass',
 				// translators: 1: dynamic value
@@ -1247,7 +1247,7 @@ class OHSA_Engine {
 				'detail' => __( 'xmlrpc.php is enabled — an attack surface for brute-force amplification; disable if unused.', 'omnihealth-site-auditor' ),
 			);
 		}
-		/* translators: %d: HTTP status code */
+		// translators: %d: HTTP status code
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
@@ -1296,17 +1296,17 @@ class OHSA_Engine {
 
 		$issues = array();
 		if ( $expired > (int) apply_filters( 'ohsa_max_expired_transients', 200 ) ) {
-			/* translators: %d: count */
+			// translators: %d: count
 			// translators: 1: dynamic value
 			$issues[] = sprintf( __( '%d expired transients', 'omnihealth-site-auditor' ), $expired );
 		}
 		if ( $revisions > (int) apply_filters( 'ohsa_max_revisions', 500 ) ) {
-			/* translators: %d: count */
+			// translators: %d: count
 			// translators: 1: dynamic value
 			$issues[] = sprintf( __( '%d post revisions', 'omnihealth-site-auditor' ), $revisions );
 		}
 		if ( $spam > (int) apply_filters( 'ohsa_max_spam_comments', 500 ) ) {
-			/* translators: %d: count */
+			// translators: %d: count
 			// translators: 1: dynamic value
 			$issues[] = sprintf( __( '%d spam/trash comments', 'omnihealth-site-auditor' ), $spam );
 		}
@@ -1316,7 +1316,7 @@ class OHSA_Engine {
 				'detail' => __( 'Database is tidy.', 'omnihealth-site-auditor' ),
 			);
 		}
-		/* translators: %s: comma-separated list of issues */
+		// translators: %s: comma-separated list of issues
 		return array(
 			'status' => 'warn',
 			// translators: 1: dynamic value
@@ -1355,7 +1355,7 @@ class OHSA_Engine {
 			$warn     = (int) apply_filters( 'ohsa_backup_warn_days', 7 );
 			$fail     = (int) apply_filters( 'ohsa_backup_fail_days', 14 );
 			if ( $age_days > $fail ) {
-				/* translators: %d: days */
+				// translators: %d: days
 				return array(
 					'status' => 'fail',
 					// translators: 1: dynamic value
@@ -1363,14 +1363,14 @@ class OHSA_Engine {
 				);
 			}
 			if ( $age_days > $warn ) {
-				/* translators: %d: days */
+				// translators: %d: days
 				return array(
 					'status' => 'warn',
 					// translators: 1: dynamic value
 					'detail' => sprintf( __( 'Last backup was %d days ago.', 'omnihealth-site-auditor' ), $age_days ),
 				);
 			}
-			/* translators: %d: days */
+			// translators: %d: days
 			return array(
 				'status' => 'pass',
 				// translators: 1: dynamic value
@@ -1472,14 +1472,14 @@ class OHSA_Engine {
 			$missing[] = 'DMARC';
 		}
 		if ( empty( $missing ) ) {
-			/* translators: %s: domain */
+			// translators: %s: domain
 			return array(
 				'status' => 'pass',
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'SPF and DMARC present for %s.', 'omnihealth-site-auditor' ), $domain ),
 			);
 		}
-		/* translators: 1: missing records, 2: domain */
+		// translators: 1: missing records, 2: domain
 		return array(
 			'status' => 'warn',
 			// translators: 1: dynamic value
@@ -1604,14 +1604,14 @@ class OHSA_Engine {
 		$sample    = implode( ', ', array_slice( $orphans, 0, 8 ) );
 		$threshold = (int) apply_filters( 'ohsa_orphan_tables_warn', 40 );
 		if ( $count > $threshold ) {
-			/* translators: 1: count, 2: sample table names */
+			// translators: 1: count, 2: sample table names
 			return array(
 				'status' => 'warn',
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( '%1$d non-core tables (sample: %2$s) — review for leftovers from removed plugins; allow-list expected ones via the ohsa_known_tables filter.', 'omnihealth-site-auditor' ), $count, $sample ),
 			);
 		}
-		/* translators: 1: count, 2: sample table names */
+		// translators: 1: count, 2: sample table names
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
@@ -1663,17 +1663,17 @@ class OHSA_Engine {
 		$off_branch = '' !== $offered ? implode( '.', array_slice( explode( '.', $offered ), 0, 2 ) ) : '';
 
 		if ( '' !== $offered && $cur_branch === $off_branch ) {
-			/* translators: 1: current version, 2: offered version */
+			// translators: 1: current version, 2: offered version
 			return array(
 				'status' => 'fail',
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'A WordPress maintenance/security update is available (%1$s → %2$s) — apply it promptly.', 'omnihealth-site-auditor' ), $current, $offered ),
 			);
 		}
-		/* translators: 1: current version, 2: offered version */
+		// translators: 1: current version, 2: offered version
 		return array(
 			'status' => 'warn',
-			/* translators: 1: current version, 2: new version */
+			// translators: 1: current version, 2: new version
 			// translators: 1: dynamic value
 			'detail' => sprintf( __( 'A WordPress feature update is available (%1$s → %2$s).', 'omnihealth-site-auditor' ), $current, '' !== $offered ? $offered : __( 'newer', 'omnihealth-site-auditor' ) ),
 		);
@@ -1702,7 +1702,7 @@ class OHSA_Engine {
 		}
 		return array(
 			'status' => 'warn',
-			/* translators: %d: number of plugins */
+			// translators: %d: number of plugins
 			// translators: 1: dynamic value
 			'detail' => sprintf( _n( '%d plugin update is pending.', '%d plugin updates are pending.', $count, 'omnihealth-site-auditor' ), $count ),
 		);
@@ -1747,10 +1747,10 @@ class OHSA_Engine {
 				'detail' => __( 'User enumeration is not trivially exposed.', 'omnihealth-site-auditor' ),
 			);
 		}
-		/* translators: %s: semicolon-separated list of exposure vectors */
+		// translators: %s: semicolon-separated list of exposure vectors
 		return array(
 			'status' => 'warn',
-			/* translators: %s: list of enumeration issues found */
+			// translators: %s: list of enumeration issues found
 			// translators: 1: dynamic value
 			'detail' => sprintf( __( 'User enumeration possible: %s.', 'omnihealth-site-auditor' ), implode( '; ', $issues ) ),
 		);
@@ -1831,16 +1831,16 @@ class OHSA_Engine {
 		if ( $mode & 0004 ) { // others-read bit.
 			return array(
 				'status' => 'fail',
-				/* translators: %o: octal file mode */
+				// translators: %o: octal file mode
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'wp-config.php is world-readable (%o) — set 0640 or 0600.', 'omnihealth-site-auditor' ), $mode ),
 			);
 		}
 
-		/* translators: %o: octal file mode */
+		// translators: %o: octal file mode
 		return array(
 			'status' => 'pass',
-			/* translators: %o: file permissions */
+			// translators: %o: file permissions
 			// translators: 1: dynamic value
 			'detail' => sprintf( __( 'wp-config.php permissions are restrictive (%o).', 'omnihealth-site-auditor' ), $mode ),
 		);
@@ -1886,19 +1886,19 @@ class OHSA_Engine {
 		}
 
 		if ( empty( $missing ) ) {
-			/* translators: %d: number of tables */
+			// translators: %d: number of tables
 			return array(
 				'status' => 'pass',
-				/* translators: %d: number of core tables */
+				// translators: %d: number of core tables
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'All %d core database tables are present.', 'omnihealth-site-auditor' ), count( $expected ) ),
 			);
 		}
 
-		/* translators: %s: comma-separated table names */
+		// translators: %s: comma-separated table names
 		return array(
 			'status' => 'fail',
-			/* translators: %s: list of missing core tables */
+			// translators: %s: list of missing core tables
 			// translators: 1: dynamic value
 			'detail' => sprintf( __( 'Missing core database tables: %s', 'omnihealth-site-auditor' ), implode( ', ', $missing ) ),
 		);
@@ -2056,10 +2056,10 @@ class OHSA_Engine {
 		$tables = $wpdb->get_results( "SHOW TABLE STATUS WHERE Engine != 'InnoDB' AND Engine IS NOT NULL" );
 
 		if ( ! empty( $tables ) ) {
-			/* translators: %d: number of tables */
+			// translators: %d: number of tables
 			return array(
 				'status' => 'warn',
-				/* translators: %d: number of tables */
+				// translators: %d: number of tables
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( '%d tables are not using the InnoDB storage engine.', 'omnihealth-site-auditor' ), count( $tables ) ),
 			);
@@ -2083,10 +2083,10 @@ class OHSA_Engine {
 		$tables = $wpdb->get_results( "SHOW TABLE STATUS WHERE Collation NOT LIKE 'utf8mb4%'" );
 
 		if ( ! empty( $tables ) ) {
-			/* translators: %d: number of tables */
+			// translators: %d: number of tables
 			return array(
 				'status' => 'warn',
-				/* translators: %d: number of tables */
+				// translators: %d: number of tables
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( '%d tables are not using the recommended utf8mb4 collation.', 'omnihealth-site-auditor' ), count( $tables ) ),
 			);
@@ -2108,10 +2108,10 @@ class OHSA_Engine {
 
 		if ( ! empty( $updates->response ) ) {
 			$count = count( $updates->response );
-			/* translators: %d: number of themes */
+			// translators: %d: number of themes
 			return array(
 				'status' => 'warn',
-				/* translators: %d: number of themes */
+				// translators: %d: number of themes
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'You have %d theme(s) with pending updates.', 'omnihealth-site-auditor' ), $count ),
 			);
@@ -2141,10 +2141,10 @@ class OHSA_Engine {
 		$inactive_themes = count( $themes ) - 1; // Assuming 1 active theme.
 
 		if ( $inactive > 5 || $inactive_themes > 3 ) {
-			/* translators: 1: number of plugins, 2: number of themes */
+			// translators: 1: number of plugins, 2: number of themes
 			return array(
 				'status' => 'warn',
-				/* translators: 1: number of plugins, 2: number of themes */
+				// translators: 1: number of plugins, 2: number of themes
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'You have %1$d inactive plugins and %2$d inactive themes. Consider removing them to reduce attack surface.', 'omnihealth-site-auditor' ), $inactive, $inactive_themes ),
 			);
@@ -2182,10 +2182,10 @@ class OHSA_Engine {
 		}
 
 		if ( $overdue > 0 ) {
-			/* translators: %d: number of overdue tasks */
+			// translators: %d: number of overdue tasks
 			return array(
 				'status' => 'warn',
-				/* translators: %d: number of overdue tasks */
+				// translators: %d: number of overdue tasks
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( '%d scheduled tasks are overdue by more than 30 minutes. WP-Cron may not be running.', 'omnihealth-site-auditor' ), $overdue ),
 			);
@@ -2268,7 +2268,7 @@ class OHSA_Engine {
 		if ( $total_mb > $threshold_mb ) {
 			return array(
 				'status' => 'warn',
-				/* translators: 1: total size, 2: top tables list */
+				// translators: 1: total size, 2: top tables list
 				// translators: 1: dynamic value
 				'detail' => sprintf( __( 'Database size is %1$s. Top tables: %2$s', 'omnihealth-site-auditor' ), size_format( $total_bytes, 2 ), implode( ', ', $top_tables ) ),
 			);
@@ -2276,7 +2276,7 @@ class OHSA_Engine {
 
 		return array(
 			'status' => 'pass',
-			/* translators: 1: total size, 2: top tables list */
+			// translators: 1: total size, 2: top tables list
 			// translators: 1: dynamic value
 			'detail' => sprintf( __( 'Database size is %1$s. Top tables: %2$s', 'omnihealth-site-auditor' ), size_format( $total_bytes, 2 ), implode( ', ', $top_tables ) ),
 		);
@@ -2302,7 +2302,7 @@ class OHSA_Engine {
 
 		return array(
 			'status' => 'warn',
-			/* translators: %s: current charset */
+			// translators: %s: current charset
 			// translators: 1: dynamic value
 			'detail' => sprintf( __( 'Database connection uses "%s", but utf8mb4 is recommended.', 'omnihealth-site-auditor' ), $charset ),
 		);
@@ -2386,7 +2386,7 @@ class OHSA_Engine {
 
 		return array(
 			'status' => 'warn',
-			/* translators: %d: HTTP status code */
+			// translators: %d: HTTP status code
 			// translators: 1: dynamic value
 			'detail' => sprintf( __( 'The REST API responded with an unexpected status code (%d).', 'omnihealth-site-auditor' ), $status_code ),
 		);
