@@ -2,7 +2,7 @@
 /**
  * Health-check engine.
  *
- * Collects checks from the `ohsa_registered_checks` filter, runs each one in
+ * Collects checks from the `pvsa_registered_checks` filter, runs each one in
  * isolation (a throwing check becomes a "fail", not a crash), times it, and
  * aggregates a worst-of verdict. The built-in generic checks are registered
  * through the SAME public filter third parties use — they are the reference
@@ -17,20 +17,20 @@
  *   )
  * The callback returns: array( 'status' => 'pass'|'warn'|'fail', 'detail' => '…' ).
  *
- * @package OmniHealthSiteAuditor
+ * @package PressVitalsSiteAuditor
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class OHSA_Engine {
+class PVSA_Engine {
 
 	/**
 	 * Hook the built-in checks onto the public registration filter.
 	 */
 	public function init() {
-		add_filter( 'ohsa_registered_checks', array( $this, 'register_core_checks' ) );
+		add_filter( 'pvsa_registered_checks', array( $this, 'register_core_checks' ) );
 	}
 
 	/**
@@ -56,15 +56,15 @@ class OHSA_Engine {
 	 * @return mixed
 	 */
 	public static function get_setting( $key, $default = null ) {
-		$settings = get_option( OHSA_OPTION_SETTINGS, array() );
+		$settings = get_option( PVSA_OPTION_SETTINGS, array() );
 		$value    = ( is_array( $settings ) && isset( $settings[ $key ] ) ) ? $settings[ $key ] : $default;
 
 		/**
-		 * Filter a single OmniHealth: Deep Site Auditor setting at read time.
+		 * Filter a single PressVitals Site Auditor setting at read time.
 		 *
 		 * @param mixed $value The resolved value.
 		 */
-		return apply_filters( 'ohsa_setting_' . $key, $value );
+		return apply_filters( 'pvsa_setting_' . $key, $value );
 	}
 
 	/**
@@ -74,15 +74,15 @@ class OHSA_Engine {
 	 */
 	public static function group_order() {
 		return array(
-			__( 'Availability', 'omnihealth-site-auditor' ),
-			__( 'Security', 'omnihealth-site-auditor' ),
-			__( 'Errors', 'omnihealth-site-auditor' ),
-			__( 'Database', 'omnihealth-site-auditor' ),
-			__( 'Files', 'omnihealth-site-auditor' ),
-			__( 'Email', 'omnihealth-site-auditor' ),
-			__( 'SEO', 'omnihealth-site-auditor' ),
-			__( 'Performance', 'omnihealth-site-auditor' ),
-			__( 'Environment', 'omnihealth-site-auditor' ),
+			__( 'Availability', 'pressvitals-site-auditor' ),
+			__( 'Security', 'pressvitals-site-auditor' ),
+			__( 'Errors', 'pressvitals-site-auditor' ),
+			__( 'Database', 'pressvitals-site-auditor' ),
+			__( 'Files', 'pressvitals-site-auditor' ),
+			__( 'Email', 'pressvitals-site-auditor' ),
+			__( 'SEO', 'pressvitals-site-auditor' ),
+			__( 'Performance', 'pressvitals-site-auditor' ),
+			__( 'Environment', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -94,11 +94,11 @@ class OHSA_Engine {
 	public function get_checks() {
 		/**
 		 * Register health checks. Add your own by returning the array with a
-		 * new keyed entry. See OHSA_Engine::register_core_checks() for the shape.
+		 * new keyed entry. See PVSA_Engine::register_core_checks() for the shape.
 		 *
 		 * @param array $checks Map of check-id => definition.
 		 */
-		$checks = apply_filters( 'ohsa_registered_checks', array() );
+		$checks = apply_filters( 'pvsa_registered_checks', array() );
 		if ( ! is_array( $checks ) ) {
 			$checks = array();
 		}
@@ -137,7 +137,7 @@ class OHSA_Engine {
 
 			$result['id']          = $id;
 			$result['label']       = isset( $def['label'] ) ? (string) $def['label'] : $id;
-			$result['group']       = isset( $def['group'] ) ? (string) $def['group'] : __( 'Other', 'omnihealth-site-auditor' );
+			$result['group']       = isset( $def['group'] ) ? (string) $def['group'] : __( 'Other', 'pressvitals-site-auditor' );
 			$result['tier']        = isset( $def['tier'] ) ? (int) $def['tier'] : 3;
 			$result['duration_ms'] = (int) round( ( microtime( true ) - $t0 ) * 1000 );
 
@@ -163,7 +163,7 @@ class OHSA_Engine {
 			if ( ! is_array( $r ) || ! isset( $r['status'] ) ) {
 				return array(
 					'status' => 'fail',
-					'detail' => __( 'Malformed check result.', 'omnihealth-site-auditor' ),
+					'detail' => __( 'Malformed check result.', 'pressvitals-site-auditor' ),
 				);
 			}
 			$r['status'] = in_array( $r['status'], array( 'pass', 'warn', 'fail' ), true ) ? $r['status'] : 'fail';
@@ -172,7 +172,7 @@ class OHSA_Engine {
 		} catch ( \Throwable $e ) {
 			return array(
 				'status' => 'fail',
-				'detail' => __( 'Check threw an exception.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Check threw an exception.', 'pressvitals-site-auditor' ),
 			);
 		}
 	}
@@ -195,68 +195,68 @@ class OHSA_Engine {
 
 		$core = array(
 			'db_connection'           => array(
-				'label'    => __( 'Database connection', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Availability', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Database connection', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Availability', 'pressvitals-site-auditor' ),
 				'tier'     => 1,
 				'callback' => array( $this, 'check_db_connection' ),
 			),
 			'https_home'              => array(
-				'label'    => __( 'Homepage over HTTPS', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Availability', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Homepage over HTTPS', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Availability', 'pressvitals-site-auditor' ),
 				'tier'     => 1,
 				'callback' => array( $this, 'check_https_home' ),
 			),
 			'debug_display_off'       => array(
-				'label'    => __( 'Error display off in production', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Error display off in production', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 2,
 				'callback' => array( $this, 'check_debug_display_off' ),
 			),
 			'error_log_size'          => array(
-				'label'    => __( 'Error log size', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Errors', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Error log size', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Errors', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_error_log_size' ),
 			),
 			'php_fatal_errors_recent' => array(
-				'label'    => __( 'Recent PHP fatal errors', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Errors', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Recent PHP fatal errors', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Errors', 'pressvitals-site-auditor' ),
 				'tier'     => 2,
 				'callback' => array( $this, 'check_php_fatal_errors_recent' ),
 			),
 			'autoloaded_options_size' => array(
-				'label'    => __( 'Autoloaded options size', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Database', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Autoloaded options size', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Database', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_autoloaded_options_size' ),
 			),
 			'disk_free'               => array(
-				'label'    => __( 'Free disk space', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Files', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Free disk space', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Files', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_disk_free' ),
 			),
 			'uploads_writable'        => array(
-				'label'    => __( 'Uploads directory writable', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Files', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Uploads directory writable', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Files', 'pressvitals-site-auditor' ),
 				'tier'     => 2,
 				'callback' => array( $this, 'check_uploads_writable' ),
 			),
 			'memory_limit'            => array(
-				'label'    => __( 'PHP memory limit', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Performance', 'omnihealth-site-auditor' ),
+				'label'    => __( 'PHP memory limit', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Performance', 'pressvitals-site-auditor' ),
 				'tier'     => 4,
 				'callback' => array( $this, 'check_memory_limit' ),
 			),
 			'object_cache'            => array(
-				'label'    => __( 'Persistent object cache', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Performance', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Persistent object cache', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Performance', 'pressvitals-site-auditor' ),
 				'tier'     => 4,
 				'callback' => array( $this, 'check_object_cache' ),
 			),
 			'php_version'             => array(
-				'label'    => __( 'Supported PHP version', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Environment', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Supported PHP version', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Environment', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_php_version' ),
 			),
@@ -265,194 +265,194 @@ class OHSA_Engine {
 			// perform (security posture, deliverability, TLS expiry, backups,
 			// secret/file leaks, DB bloat). These are the auditor's signature. ---
 			'env_file_exposed'        => array(
-				'label'    => __( '.env file not web-accessible', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( '.env file not web-accessible', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 1,
 				'callback' => array( $this, 'check_env_file_exposed' ),
 			),
 			'stray_files'             => array(
-				'label'    => __( 'No stray backup/diagnostic files in web root', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'No stray backup/diagnostic files in web root', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 2,
 				'callback' => array( $this, 'check_stray_files' ),
 			),
 			'ssl_cert_expiry'         => array(
-				'label'    => __( 'TLS certificate expiry', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'TLS certificate expiry', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 1,
 				'callback' => array( $this, 'check_ssl_cert_expiry' ),
 			),
 			'security_headers'        => array(
-				'label'    => __( 'Baseline security headers', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Baseline security headers', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_security_headers' ),
 			),
 			'https_forced'            => array(
-				'label'    => __( 'HTTPS is forced', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'HTTPS is forced', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 2,
 				'callback' => array( $this, 'check_https_forced' ),
 			),
 			'xmlrpc_status'           => array(
-				'label'    => __( 'XML-RPC exposure', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'XML-RPC exposure', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 4,
 				'callback' => array( $this, 'check_xmlrpc_status' ),
 			),
 			'admin_username'          => array(
-				'label'    => __( 'No default "admin" username', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'No default "admin" username', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 4,
 				'callback' => array( $this, 'check_admin_username' ),
 			),
 			'db_overhead'             => array(
-				'label'    => __( 'Database bloat', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Database', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Database bloat', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Database', 'pressvitals-site-auditor' ),
 				'tier'     => 4,
 				'callback' => array( $this, 'check_db_overhead' ),
 			),
 			'backup_recency'          => array(
-				'label'    => __( 'Recent backup', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Files', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Recent backup', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Files', 'pressvitals-site-auditor' ),
 				'tier'     => 2,
 				'callback' => array( $this, 'check_backup_recency' ),
 			),
 			'email_dns'               => array(
-				'label'    => __( 'Email DNS (SPF + DMARC)', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Email', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Email DNS (SPF + DMARC)', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Email', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_email_dns' ),
 			),
 			'homepage_indexable'      => array(
-				'label'    => __( 'Homepage is indexable', 'omnihealth-site-auditor' ),
-				'group'    => __( 'SEO', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Homepage is indexable', 'pressvitals-site-auditor' ),
+				'group'    => __( 'SEO', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_homepage_indexable' ),
 			),
 			'https_mixed_content'     => array(
-				'label'    => __( 'HTTPS Mixed Content', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'HTTPS Mixed Content', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_https_mixed_content' ),
 			),
 			'rest_api_reachable'      => array(
-				'label'    => __( 'REST API availability', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Environment', 'omnihealth-site-auditor' ),
+				'label'    => __( 'REST API availability', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Environment', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_rest_api_reachable' ),
 			),
 			'env_file_on_disk'        => array(
-				'label'    => __( '.env file not present/exposed on disk', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( '.env file not present/exposed on disk', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 1,
 				'callback' => array( $this, 'check_env_file_on_disk' ),
 			),
 			'wp_config_permissions'   => array(
-				'label'    => __( 'wp-config.php permissions', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'wp-config.php permissions', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 1,
 				'callback' => array( $this, 'check_wp_config_permissions' ),
 			),
 			'core_tables_present'     => array(
-				'label'    => __( 'Core database tables present', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Database', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Core database tables present', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Database', 'pressvitals-site-auditor' ),
 				'tier'     => 1,
 				'callback' => array( $this, 'check_core_tables_present' ),
 			),
 			'orphaned_tables'         => array(
-				'label'    => __( 'Non-core database tables', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Database', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Non-core database tables', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Database', 'pressvitals-site-auditor' ),
 				'tier'     => 4,
 				'callback' => array( $this, 'check_orphaned_tables' ),
 			),
 			'core_update_available'   => array(
-				'label'    => __( 'WordPress core up to date', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Environment', 'omnihealth-site-auditor' ),
+				'label'    => __( 'WordPress core up to date', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Environment', 'pressvitals-site-auditor' ),
 				'tier'     => 2,
 				'callback' => array( $this, 'check_core_update_available' ),
 			),
 			'plugin_updates_pending'  => array(
-				'label'    => __( 'Plugin updates', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Environment', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Plugin updates', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Environment', 'pressvitals-site-auditor' ),
 				'tier'     => 2,
 				'callback' => array( $this, 'check_plugin_updates_pending' ),
 			),
 			'user_enumeration'        => array(
-				'label'    => __( 'User enumeration not exposed', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'User enumeration not exposed', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_user_enumeration_blocked' ),
 			),
 			'secret_keys_defined'     => array(
-				'label'    => __( 'Secret keys defined', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Secret keys defined', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 2,
 				'callback' => array( $this, 'check_secret_keys_defined' ),
 			),
 			'file_editing_disabled'   => array(
-				'label'    => __( 'File editing disabled', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'File editing disabled', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_file_editing_disabled' ),
 			),
 			'directory_listing_off'   => array(
-				'label'    => __( 'Directory listing disabled', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Directory listing disabled', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_directory_listing_off' ),
 			),
 			'force_ssl_admin'         => array(
-				'label'    => __( 'Force SSL for Admin', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Security', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Force SSL for Admin', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Security', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_force_ssl_admin' ),
 			),
 			'table_storage_engine'    => array(
-				'label'    => __( 'Database storage engine', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Database', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Database storage engine', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Database', 'pressvitals-site-auditor' ),
 				'tier'     => 4,
 				'callback' => array( $this, 'check_table_storage_engine' ),
 			),
 			'table_collation'         => array(
-				'label'    => __( 'Database collation', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Database', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Database collation', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Database', 'pressvitals-site-auditor' ),
 				'tier'     => 4,
 				'callback' => array( $this, 'check_table_collation' ),
 			),
 			'largest_tables'          => array(
-				'label'    => __( 'Largest database tables', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Database', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Largest database tables', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Database', 'pressvitals-site-auditor' ),
 				'tier'     => 5,
 				'callback' => array( $this, 'check_largest_tables' ),
 			),
 			'db_charset_client'       => array(
-				'label'    => __( 'Database client charset', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Database', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Database client charset', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Database', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_db_charset_client' ),
 			),
 			'theme_updates_pending'   => array(
-				'label'    => __( 'Theme updates', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Environment', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Theme updates', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Environment', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_theme_updates_pending' ),
 			),
 			'inactive_plugins_themes' => array(
-				'label'    => __( 'Inactive plugins and themes', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Environment', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Inactive plugins and themes', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Environment', 'pressvitals-site-auditor' ),
 				'tier'     => 4,
 				'callback' => array( $this, 'check_inactive_plugins_themes' ),
 			),
 			'cron_overdue'            => array(
-				'label'    => __( 'Scheduled events (WP-Cron)', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Performance', 'omnihealth-site-auditor' ),
+				'label'    => __( 'Scheduled events (WP-Cron)', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Performance', 'pressvitals-site-auditor' ),
 				'tier'     => 3,
 				'callback' => array( $this, 'check_cron_overdue' ),
 			),
 			'transient_api_backed'    => array(
-				'label'    => __( 'API-backed transients', 'omnihealth-site-auditor' ),
-				'group'    => __( 'Performance', 'omnihealth-site-auditor' ),
+				'label'    => __( 'API-backed transients', 'pressvitals-site-auditor' ),
+				'group'    => __( 'Performance', 'pressvitals-site-auditor' ),
 				'tier'     => 4,
 				'callback' => array( $this, 'check_transient_api_backed' ),
 			),
@@ -475,11 +475,11 @@ class OHSA_Engine {
 		return ( '1' === (string) $result )
 			? array(
 				'status' => 'pass',
-				'detail' => __( 'MySQL responds to SELECT 1.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'MySQL responds to SELECT 1.', 'pressvitals-site-auditor' ),
 			)
 			: array(
 				'status' => 'fail',
-				'detail' => __( 'MySQL did not return a row for SELECT 1.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'MySQL did not return a row for SELECT 1.', 'pressvitals-site-auditor' ),
 			);
 	}
 
@@ -493,16 +493,16 @@ class OHSA_Engine {
 		if ( 0 !== stripos( $home, 'https://' ) ) {
 			return array(
 				'status' => 'warn',
-				'detail' => __( 'Site address is not HTTPS.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Site address is not HTTPS.', 'pressvitals-site-auditor' ),
 			);
 		}
 
-		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
+		$timeout  = (int) apply_filters( 'pvsa_http_timeout', 8 );
 		$response = wp_remote_get( $home, array( 'timeout' => $timeout ) );
 		if ( is_wp_error( $response ) ) {
 			return array(
 				'status' => 'fail',
-				'detail' => __( 'Homepage request failed: ', 'omnihealth-site-auditor' ) . $response->get_error_message(),
+				'detail' => __( 'Homepage request failed: ', 'pressvitals-site-auditor' ) . $response->get_error_message(),
 			);
 		}
 
@@ -510,13 +510,13 @@ class OHSA_Engine {
 		return ( 200 === $code )
 			? array(
 				'status' => 'pass',
-				'detail' => __( 'Homepage returns HTTP 200 over HTTPS.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Homepage returns HTTP 200 over HTTPS.', 'pressvitals-site-auditor' ),
 			)
 			: array(
 				'status' => 'fail',
 				// translators: %d: HTTP status code
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'Homepage returned HTTP %d.', 'omnihealth-site-auditor' ), $code ),
+				'detail' => sprintf( __( 'Homepage returned HTTP %d.', 'pressvitals-site-auditor' ), $code ),
 			);
 	}
 
@@ -532,11 +532,11 @@ class OHSA_Engine {
 		return $on
 			? array(
 				'status' => 'warn',
-				'detail' => __( 'display_errors is on — PHP errors may leak to visitors.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'display_errors is on — PHP errors may leak to visitors.', 'pressvitals-site-auditor' ),
 			)
 			: array(
 				'status' => 'pass',
-				'detail' => __( 'Error display is off for visitors.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Error display is off for visitors.', 'pressvitals-site-auditor' ),
 			);
 	}
 
@@ -550,7 +550,7 @@ class OHSA_Engine {
 		if ( '' === $path ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'No readable error log found.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'No readable error log found.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -565,7 +565,7 @@ class OHSA_Engine {
 			return array(
 				'status' => 'fail',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( '%1$s is %2$s — rotate or truncate it.', 'omnihealth-site-auditor' ), $file_name, $readable ),
+				'detail' => sprintf( __( '%1$s is %2$s — rotate or truncate it.', 'pressvitals-site-auditor' ), $file_name, $readable ),
 			);
 		}
 		if ( $bytes >= $warn ) {
@@ -573,14 +573,14 @@ class OHSA_Engine {
 			return array(
 				'status' => 'warn',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( '%1$s is %2$s — growing.', 'omnihealth-site-auditor' ), $file_name, $readable ),
+				'detail' => sprintf( __( '%1$s is %2$s — growing.', 'pressvitals-site-auditor' ), $file_name, $readable ),
 			);
 		}
 		// translators: 1: file name, 2: human-readable size
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( '%1$s is %2$s.', 'omnihealth-site-auditor' ), $file_name, $readable ),
+			'detail' => sprintf( __( '%1$s is %2$s.', 'pressvitals-site-auditor' ), $file_name, $readable ),
 		);
 	}
 
@@ -597,18 +597,18 @@ class OHSA_Engine {
 		if ( '' === $path ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'No readable error log found.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'No readable error log found.', 'pressvitals-site-auditor' ),
 			);
 		}
 
 		$size = (int) filesize( $path );
-		$cap  = (int) apply_filters( 'ohsa_fatal_scan_max_bytes', 10 * MB_IN_BYTES );
+		$cap  = (int) apply_filters( 'pvsa_fatal_scan_max_bytes', 10 * MB_IN_BYTES );
 		if ( $size > $cap ) {
 			return array(
 				'status' => 'warn',
 				// translators: %s: human-readable size
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'Error log too large to scan (%s); inspect it manually.', 'omnihealth-site-auditor' ), size_format( $size, 2 ) ),
+				'detail' => sprintf( __( 'Error log too large to scan (%s); inspect it manually.', 'pressvitals-site-auditor' ), size_format( $size, 2 ) ),
 			);
 		}
 
@@ -619,7 +619,7 @@ class OHSA_Engine {
 		if ( ! WP_Filesystem() || ! $wp_filesystem ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Filesystem API unavailable; skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Filesystem API unavailable; skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -627,11 +627,11 @@ class OHSA_Engine {
 		if ( false === $contents ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Could not read error log; skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Could not read error log; skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
 
-		$hours  = (int) apply_filters( 'ohsa_fatal_lookback_hours', 24 );
+		$hours  = (int) apply_filters( 'pvsa_fatal_lookback_hours', 24 );
 		$cutoff = time() - ( $hours * HOUR_IN_SECONDS );
 		$count  = 0;
 
@@ -654,7 +654,7 @@ class OHSA_Engine {
 				'status' => 'warn',
 				'detail' => sprintf(
 					// translators: 1: error count, 2: lookback hours
-					_n( '%1$d PHP fatal/parse error in the last %2$d h.', '%1$d PHP fatal/parse errors in the last %2$d h.', $count, 'omnihealth-site-auditor' ),
+					_n( '%1$d PHP fatal/parse error in the last %2$d h.', '%1$d PHP fatal/parse errors in the last %2$d h.', $count, 'pressvitals-site-auditor' ),
 					$count,
 					$hours
 				),
@@ -664,7 +664,7 @@ class OHSA_Engine {
 			'status' => 'pass',
 			// translators: %d: lookback hours
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'No PHP fatal/parse errors in the last %d h.', 'omnihealth-site-auditor' ), $hours ),
+			'detail' => sprintf( __( 'No PHP fatal/parse errors in the last %d h.', 'pressvitals-site-auditor' ), $hours ),
 		);
 	}
 
@@ -688,7 +688,7 @@ class OHSA_Engine {
 			return array(
 				'status' => 'fail',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'Autoloaded options total %s — trim them.', 'omnihealth-site-auditor' ), $h ),
+				'detail' => sprintf( __( 'Autoloaded options total %s — trim them.', 'pressvitals-site-auditor' ), $h ),
 			);
 		}
 		if ( $bytes >= $warn ) {
@@ -696,14 +696,14 @@ class OHSA_Engine {
 			return array(
 				'status' => 'warn',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'Autoloaded options total %s.', 'omnihealth-site-auditor' ), $h ),
+				'detail' => sprintf( __( 'Autoloaded options total %s.', 'pressvitals-site-auditor' ), $h ),
 			);
 		}
 		// translators: %s: human-readable size
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'Autoloaded options total %s.', 'omnihealth-site-auditor' ), $h ),
+			'detail' => sprintf( __( 'Autoloaded options total %s.', 'pressvitals-site-auditor' ), $h ),
 		);
 	}
 
@@ -716,30 +716,30 @@ class OHSA_Engine {
 		if ( ! function_exists( 'disk_free_space' ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'disk_free_space() unavailable; skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'disk_free_space() unavailable; skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$free = @disk_free_space( ABSPATH ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		if ( false === $free ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Could not read free disk space; skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Could not read free disk space; skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
-		$min = (float) apply_filters( 'ohsa_disk_free_min_bytes', 512 * MB_IN_BYTES );
+		$min = (float) apply_filters( 'pvsa_disk_free_min_bytes', 512 * MB_IN_BYTES );
 		if ( $free < $min ) {
 			// translators: %s: human-readable size
 			return array(
 				'status' => 'warn',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'Only %s free on the WordPress volume.', 'omnihealth-site-auditor' ), size_format( $free, 2 ) ),
+				'detail' => sprintf( __( 'Only %s free on the WordPress volume.', 'pressvitals-site-auditor' ), size_format( $free, 2 ) ),
 			);
 		}
 		// translators: %s: human-readable size
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( '%s free on the WordPress volume.', 'omnihealth-site-auditor' ), size_format( $free, 2 ) ),
+			'detail' => sprintf( __( '%s free on the WordPress volume.', 'pressvitals-site-auditor' ), size_format( $free, 2 ) ),
 		);
 	}
 
@@ -759,11 +759,11 @@ class OHSA_Engine {
 		return wp_is_writable( $uploads['basedir'] )
 			? array(
 				'status' => 'pass',
-				'detail' => __( 'Uploads directory is writable.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Uploads directory is writable.', 'pressvitals-site-auditor' ),
 			)
 			: array(
 				'status' => 'fail',
-				'detail' => __( 'Uploads directory is not writable.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Uploads directory is not writable.', 'pressvitals-site-auditor' ),
 			);
 	}
 
@@ -775,21 +775,21 @@ class OHSA_Engine {
 	public function check_memory_limit() {
 		$limit = ini_get( 'memory_limit' );
 		$bytes = wp_convert_hr_to_bytes( (string) $limit );
-		$min   = (int) apply_filters( 'ohsa_memory_min_bytes', 128 * MB_IN_BYTES );
+		$min   = (int) apply_filters( 'pvsa_memory_min_bytes', 128 * MB_IN_BYTES );
 
 		if ( $bytes > 0 && $bytes < $min ) {
 			// translators: %s: configured memory limit
 			return array(
 				'status' => 'warn',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'PHP memory_limit is %s.', 'omnihealth-site-auditor' ), $limit ),
+				'detail' => sprintf( __( 'PHP memory_limit is %s.', 'pressvitals-site-auditor' ), $limit ),
 			);
 		}
 		// translators: %s: configured memory limit
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'PHP memory_limit is %s.', 'omnihealth-site-auditor' ), $limit ),
+			'detail' => sprintf( __( 'PHP memory_limit is %s.', 'pressvitals-site-auditor' ), $limit ),
 		);
 	}
 
@@ -802,23 +802,23 @@ class OHSA_Engine {
 		if ( ! wp_using_ext_object_cache() ) {
 			return array(
 				'status' => 'warn',
-				'detail' => __( 'No persistent object cache is in use.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'No persistent object cache is in use.', 'pressvitals-site-auditor' ),
 			);
 		}
-		$key   = 'ohsa_probe';
+		$key   = 'pvsa_probe';
 		$value = 'v' . time();
-		wp_cache_set( $key, $value, 'omnihealth-site-auditor', 30 );
-		$got = wp_cache_get( $key, 'omnihealth-site-auditor' );
-		wp_cache_delete( $key, 'omnihealth-site-auditor' );
+		wp_cache_set( $key, $value, 'pressvitals-site-auditor', 30 );
+		$got = wp_cache_get( $key, 'pressvitals-site-auditor' );
+		wp_cache_delete( $key, 'pressvitals-site-auditor' );
 
 		return ( $got === $value )
 			? array(
 				'status' => 'pass',
-				'detail' => __( 'Persistent object cache round-trip OK.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Persistent object cache round-trip OK.', 'pressvitals-site-auditor' ),
 			)
 			: array(
 				'status' => 'fail',
-				'detail' => __( 'Object cache enabled but the round-trip failed.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Object cache enabled but the round-trip failed.', 'pressvitals-site-auditor' ),
 			);
 	}
 
@@ -846,7 +846,7 @@ class OHSA_Engine {
 		 *
 		 * @param int $months Number of months. Default 6.
 		 */
-		$horizon_months = (int) apply_filters( 'ohsa_php_eol_horizon_months', 6 );
+		$horizon_months = (int) apply_filters( 'pvsa_php_eol_horizon_months', 6 );
 
 		if ( ! isset( $eol_dates[ $major_minor ] ) ) {
 			if ( version_compare( $version, '7.4', '<' ) ) {
@@ -854,7 +854,7 @@ class OHSA_Engine {
 					'status' => 'fail',
 					// translators: %s: PHP version
 					// translators: 1: dynamic value
-					'detail' => sprintf( __( 'PHP %s is end-of-life — upgrade immediately.', 'omnihealth-site-auditor' ), $version ),
+					'detail' => sprintf( __( 'PHP %s is end-of-life — upgrade immediately.', 'pressvitals-site-auditor' ), $version ),
 				);
 			}
 
@@ -862,7 +862,7 @@ class OHSA_Engine {
 				'status' => 'pass',
 				// translators: %s: PHP version
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'PHP %s is actively supported.', 'omnihealth-site-auditor' ), $version ),
+				'detail' => sprintf( __( 'PHP %s is actively supported.', 'pressvitals-site-auditor' ), $version ),
 			);
 		}
 
@@ -874,7 +874,7 @@ class OHSA_Engine {
 				'status' => 'fail',
 				// translators: %s: PHP version
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'PHP %s is end-of-life — upgrade.', 'omnihealth-site-auditor' ), $version ),
+				'detail' => sprintf( __( 'PHP %s is end-of-life — upgrade.', 'pressvitals-site-auditor' ), $version ),
 			);
 		}
 
@@ -885,7 +885,7 @@ class OHSA_Engine {
 				'status' => 'warn',
 				// translators: %s: PHP version
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'PHP %s is nearing its end-of-life date — plan an upgrade.', 'omnihealth-site-auditor' ), $version ),
+				'detail' => sprintf( __( 'PHP %s is nearing its end-of-life date — plan an upgrade.', 'pressvitals-site-auditor' ), $version ),
 			);
 		}
 
@@ -893,7 +893,7 @@ class OHSA_Engine {
 			'status' => 'pass',
 			// translators: %s: PHP version
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'PHP %s is fully supported.', 'omnihealth-site-auditor' ), $version ),
+			'detail' => sprintf( __( 'PHP %s is fully supported.', 'pressvitals-site-auditor' ), $version ),
 		);
 	}
 
@@ -907,7 +907,7 @@ class OHSA_Engine {
 	 * @return array
 	 */
 	public function check_env_file_exposed() {
-		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
+		$timeout  = (int) apply_filters( 'pvsa_http_timeout', 8 );
 		$response = wp_remote_get(
 			home_url( '/.env?ohsa=' . time() ),
 			array(
@@ -918,7 +918,7 @@ class OHSA_Engine {
 		if ( is_wp_error( $response ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Could not probe .env; skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Could not probe .env; skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
@@ -927,7 +927,7 @@ class OHSA_Engine {
 			return array(
 				'status' => 'pass',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( '.env is not served (HTTP %d).', 'omnihealth-site-auditor' ), $code ),
+				'detail' => sprintf( __( '.env is not served (HTTP %d).', 'pressvitals-site-auditor' ), $code ),
 			);
 		}
 		if ( 200 === $code ) {
@@ -935,19 +935,19 @@ class OHSA_Engine {
 			if ( false !== stripos( $body, 'DB_' ) || false !== stripos( $body, 'SECRET' ) || false !== stripos( $body, 'PASSWORD' ) ) {
 				return array(
 					'status' => 'fail',
-					'detail' => __( '.env appears publicly readable and may expose secrets — block it now.', 'omnihealth-site-auditor' ),
+					'detail' => __( '.env appears publicly readable and may expose secrets — block it now.', 'pressvitals-site-auditor' ),
 				);
 			}
 			return array(
 				'status' => 'warn',
-				'detail' => __( '.env returns HTTP 200 — verify it is not exposing secrets.', 'omnihealth-site-auditor' ),
+				'detail' => __( '.env returns HTTP 200 — verify it is not exposing secrets.', 'pressvitals-site-auditor' ),
 			);
 		}
 		// translators: %d: HTTP status code
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( '.env returns HTTP %d.', 'omnihealth-site-auditor' ), $code ),
+			'detail' => sprintf( __( '.env returns HTTP %d.', 'pressvitals-site-auditor' ), $code ),
 		);
 	}
 
@@ -963,14 +963,14 @@ class OHSA_Engine {
 		if ( ! is_dir( $root ) || ! is_readable( $root ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Web root not readable for scan; skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Web root not readable for scan; skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$entries = scandir( $root );
 		if ( ! is_array( $entries ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Web-root scan unavailable; skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Web-root scan unavailable; skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$safe     = array( '.env.example', '.env.sample', '.env.dist', 'wp-config-sample.php' );
@@ -1002,7 +1002,7 @@ class OHSA_Engine {
 		if ( 0 === $count ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'No stray backup/diagnostic files in the web root.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'No stray backup/diagnostic files in the web root.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$secret = (bool) array_filter(
@@ -1017,14 +1017,14 @@ class OHSA_Engine {
 			return array(
 				'status' => 'fail',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( '%1$d stray file(s) including secret-bearing backups: %2$s', 'omnihealth-site-auditor' ), $count, $sample ),
+				'detail' => sprintf( __( '%1$d stray file(s) including secret-bearing backups: %2$s', 'pressvitals-site-auditor' ), $count, $sample ),
 			);
 		}
 		// translators: 1: count, 2: sample of file names
 		return array(
 			'status' => 'warn',
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( '%1$d stray file(s) in the web root: %2$s', 'omnihealth-site-auditor' ), $count, $sample ),
+			'detail' => sprintf( __( '%1$d stray file(s) in the web root: %2$s', 'pressvitals-site-auditor' ), $count, $sample ),
 		);
 	}
 
@@ -1039,13 +1039,13 @@ class OHSA_Engine {
 		if ( 'https' !== $scheme ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Site is not using HTTPS; skipped TLS expiry check.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Site is not using HTTPS; skipped TLS expiry check.', 'pressvitals-site-auditor' ),
 			);
 		}
 		if ( ! $host || ! function_exists( 'stream_socket_client' ) || ! extension_loaded( 'openssl' ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'TLS inspection unavailable; skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'TLS inspection unavailable; skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$context = stream_context_create(
@@ -1065,7 +1065,7 @@ class OHSA_Engine {
 		if ( ! $client ) {
 			return array(
 				'status' => 'warn',
-				'detail' => __( 'Could not open a TLS connection to read the certificate.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Could not open a TLS connection to read the certificate.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$params = stream_context_get_params( $client );
@@ -1073,23 +1073,23 @@ class OHSA_Engine {
 		if ( empty( $params['options']['ssl']['peer_certificate'] ) ) {
 			return array(
 				'status' => 'warn',
-				'detail' => __( 'Could not capture the TLS certificate.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Could not capture the TLS certificate.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$cert = openssl_x509_parse( $params['options']['ssl']['peer_certificate'] );
 		if ( empty( $cert['validTo_time_t'] ) ) {
 			return array(
 				'status' => 'warn',
-				'detail' => __( 'Could not parse the certificate expiry.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Could not parse the certificate expiry.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$days = (int) floor( ( (int) $cert['validTo_time_t'] - time() ) / DAY_IN_SECONDS );
-		$warn = (int) apply_filters( 'ohsa_ssl_warn_days', 14 );
-		$fail = (int) apply_filters( 'ohsa_ssl_fail_days', 5 );
+		$warn = (int) apply_filters( 'pvsa_ssl_warn_days', 14 );
+		$fail = (int) apply_filters( 'pvsa_ssl_fail_days', 5 );
 		if ( $days < 0 ) {
 			return array(
 				'status' => 'fail',
-				'detail' => __( 'TLS certificate has expired.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'TLS certificate has expired.', 'pressvitals-site-auditor' ),
 			);
 		}
 		if ( $days <= $fail ) {
@@ -1097,7 +1097,7 @@ class OHSA_Engine {
 			return array(
 				'status' => 'fail',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'TLS certificate expires in %d days — renew now.', 'omnihealth-site-auditor' ), $days ),
+				'detail' => sprintf( __( 'TLS certificate expires in %d days — renew now.', 'pressvitals-site-auditor' ), $days ),
 			);
 		}
 		if ( $days <= $warn ) {
@@ -1105,14 +1105,14 @@ class OHSA_Engine {
 			return array(
 				'status' => 'warn',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'TLS certificate expires in %d days.', 'omnihealth-site-auditor' ), $days ),
+				'detail' => sprintf( __( 'TLS certificate expires in %d days.', 'pressvitals-site-auditor' ), $days ),
 			);
 		}
 		// translators: %d: days
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'TLS certificate valid for %d more days.', 'omnihealth-site-auditor' ), $days ),
+			'detail' => sprintf( __( 'TLS certificate valid for %d more days.', 'pressvitals-site-auditor' ), $days ),
 		);
 	}
 
@@ -1122,12 +1122,12 @@ class OHSA_Engine {
 	 * @return array
 	 */
 	public function check_security_headers() {
-		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
+		$timeout  = (int) apply_filters( 'pvsa_http_timeout', 8 );
 		$response = wp_remote_get( home_url( '/?ohsa=' . time() ), array( 'timeout' => $timeout ) );
 		if ( is_wp_error( $response ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Could not fetch the homepage (loopback/local environment issue); skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Could not fetch the homepage (loopback/local environment issue); skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$want    = array(
@@ -1145,14 +1145,14 @@ class OHSA_Engine {
 		if ( empty( $missing ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'All baseline security headers are present.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'All baseline security headers are present.', 'pressvitals-site-auditor' ),
 			);
 		}
 		// translators: %s: comma-separated header names
 		return array(
 			'status' => 'warn',
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'Missing security headers: %s', 'omnihealth-site-auditor' ), implode( ', ', $missing ) ),
+			'detail' => sprintf( __( 'Missing security headers: %s', 'pressvitals-site-auditor' ), implode( ', ', $missing ) ),
 		);
 	}
 
@@ -1166,16 +1166,16 @@ class OHSA_Engine {
 		if ( ! $host ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'No host to check.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'No host to check.', 'pressvitals-site-auditor' ),
 			);
 		}
 		if ( 0 !== stripos( (string) home_url(), 'https://' ) ) {
 			return array(
 				'status' => 'fail',
-				'detail' => __( 'Site address is not HTTPS.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Site address is not HTTPS.', 'pressvitals-site-auditor' ),
 			);
 		}
-		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
+		$timeout  = (int) apply_filters( 'pvsa_http_timeout', 8 );
 		$response = wp_remote_get(
 			'http://' . $host . '/?ohsa=' . time(),
 			array(
@@ -1186,7 +1186,7 @@ class OHSA_Engine {
 		if ( is_wp_error( $response ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Site is HTTPS; the HTTP probe was inconclusive.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Site is HTTPS; the HTTP probe was inconclusive.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$code     = (int) wp_remote_retrieve_response_code( $response );
@@ -1194,20 +1194,20 @@ class OHSA_Engine {
 		if ( in_array( $code, array( 301, 302, 307, 308 ), true ) && 0 === stripos( $location, 'https://' ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'HTTP requests redirect to HTTPS.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'HTTP requests redirect to HTTPS.', 'pressvitals-site-auditor' ),
 			);
 		}
 		if ( 200 === $code ) {
 			return array(
 				'status' => 'warn',
-				'detail' => __( 'HTTP serves 200 without redirecting to HTTPS.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'HTTP serves 200 without redirecting to HTTPS.', 'pressvitals-site-auditor' ),
 			);
 		}
 		// translators: %d: HTTP status code
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'HTTP returns %d (no plain-HTTP content).', 'omnihealth-site-auditor' ), $code ),
+			'detail' => sprintf( __( 'HTTP returns %d (no plain-HTTP content).', 'pressvitals-site-auditor' ), $code ),
 		);
 	}
 
@@ -1217,7 +1217,7 @@ class OHSA_Engine {
 	 * @return array
 	 */
 	public function check_xmlrpc_status() {
-		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
+		$timeout  = (int) apply_filters( 'pvsa_http_timeout', 8 );
 		$response = wp_remote_get(
 			home_url( '/xmlrpc.php' ),
 			array(
@@ -1228,7 +1228,7 @@ class OHSA_Engine {
 		if ( is_wp_error( $response ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'xmlrpc.php probe inconclusive.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'xmlrpc.php probe inconclusive.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
@@ -1238,20 +1238,20 @@ class OHSA_Engine {
 			return array(
 				'status' => 'pass',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'xmlrpc.php is blocked (HTTP %d).', 'omnihealth-site-auditor' ), $code ),
+				'detail' => sprintf( __( 'xmlrpc.php is blocked (HTTP %d).', 'pressvitals-site-auditor' ), $code ),
 			);
 		}
 		if ( 405 === $code || false !== stripos( $body, 'XML-RPC server accepts POST' ) ) {
 			return array(
 				'status' => 'warn',
-				'detail' => __( 'xmlrpc.php is enabled — an attack surface for brute-force amplification; disable if unused.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'xmlrpc.php is enabled — an attack surface for brute-force amplification; disable if unused.', 'pressvitals-site-auditor' ),
 			);
 		}
 		// translators: %d: HTTP status code
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'xmlrpc.php returns HTTP %d.', 'omnihealth-site-auditor' ), $code ),
+			'detail' => sprintf( __( 'xmlrpc.php returns HTTP %d.', 'pressvitals-site-auditor' ), $code ),
 		);
 	}
 
@@ -1265,12 +1265,12 @@ class OHSA_Engine {
 		if ( ! $user ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'No user with the login "admin".', 'omnihealth-site-auditor' ),
+				'detail' => __( 'No user with the login "admin".', 'pressvitals-site-auditor' ),
 			);
 		}
 		return array(
 			'status' => 'warn',
-			'detail' => __( 'A user named "admin" exists — a top brute-force target; rename it.', 'omnihealth-site-auditor' ),
+			'detail' => __( 'A user named "admin" exists — a top brute-force target; rename it.', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -1295,39 +1295,39 @@ class OHSA_Engine {
 		$spam = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->comments} WHERE comment_approved IN ('spam','trash')" );
 
 		$issues = array();
-		if ( $expired > (int) apply_filters( 'ohsa_max_expired_transients', 200 ) ) {
+		if ( $expired > (int) apply_filters( 'pvsa_max_expired_transients', 200 ) ) {
 			// translators: %d: count
 			// translators: 1: dynamic value
-			$issues[] = sprintf( __( '%d expired transients', 'omnihealth-site-auditor' ), $expired );
+			$issues[] = sprintf( __( '%d expired transients', 'pressvitals-site-auditor' ), $expired );
 		}
-		if ( $revisions > (int) apply_filters( 'ohsa_max_revisions', 500 ) ) {
+		if ( $revisions > (int) apply_filters( 'pvsa_max_revisions', 500 ) ) {
 			// translators: %d: count
 			// translators: 1: dynamic value
-			$issues[] = sprintf( __( '%d post revisions', 'omnihealth-site-auditor' ), $revisions );
+			$issues[] = sprintf( __( '%d post revisions', 'pressvitals-site-auditor' ), $revisions );
 		}
-		if ( $spam > (int) apply_filters( 'ohsa_max_spam_comments', 500 ) ) {
+		if ( $spam > (int) apply_filters( 'pvsa_max_spam_comments', 500 ) ) {
 			// translators: %d: count
 			// translators: 1: dynamic value
-			$issues[] = sprintf( __( '%d spam/trash comments', 'omnihealth-site-auditor' ), $spam );
+			$issues[] = sprintf( __( '%d spam/trash comments', 'pressvitals-site-auditor' ), $spam );
 		}
 		if ( empty( $issues ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Database is tidy.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Database is tidy.', 'pressvitals-site-auditor' ),
 			);
 		}
 		// translators: %s: comma-separated list of issues
 		return array(
 			'status' => 'warn',
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'Cleanup recommended: %s.', 'omnihealth-site-auditor' ), implode( ', ', $issues ) ),
+			'detail' => sprintf( __( 'Cleanup recommended: %s.', 'pressvitals-site-auditor' ), implode( ', ', $issues ) ),
 		);
 	}
 
 	/**
 	 * A recent backup exists. Backup-agnostic: UpdraftPlus is read directly, but
 	 * ANY backup plugin or host integration can report its last successful backup
-	 * via the `ohsa_last_backup_timestamp` filter, so this works the same with or
+	 * via the `pvsa_last_backup_timestamp` filter, so this works the same with or
 	 * without UpdraftPlus (or with host-level / off-site backups).
 	 *
 	 * @return array
@@ -1344,22 +1344,22 @@ class OHSA_Engine {
 		/**
 		 * Filter the UNIX timestamp of the last successful backup. Return 0/false
 		 * if unknown. Lets any backup plugin, host, or off-site service report in
-		 * so OmniHealth stays backup-agnostic.
+		 * so PressVitals stays backup-agnostic.
 		 *
 		 * @param int $last_ts Last-backup UNIX timestamp (0 if none detected yet).
 		 */
-		$last_ts = (int) apply_filters( 'ohsa_last_backup_timestamp', $last_ts );
+		$last_ts = (int) apply_filters( 'pvsa_last_backup_timestamp', $last_ts );
 
 		if ( $last_ts > 0 ) {
 			$age_days = (int) floor( ( time() - $last_ts ) / DAY_IN_SECONDS );
-			$warn     = (int) apply_filters( 'ohsa_backup_warn_days', 7 );
-			$fail     = (int) apply_filters( 'ohsa_backup_fail_days', 14 );
+			$warn     = (int) apply_filters( 'pvsa_backup_warn_days', 7 );
+			$fail     = (int) apply_filters( 'pvsa_backup_fail_days', 14 );
 			if ( $age_days > $fail ) {
 				// translators: %d: days
 				return array(
 					'status' => 'fail',
 					// translators: 1: dynamic value
-					'detail' => sprintf( __( 'Last backup was %d days ago.', 'omnihealth-site-auditor' ), $age_days ),
+					'detail' => sprintf( __( 'Last backup was %d days ago.', 'pressvitals-site-auditor' ), $age_days ),
 				);
 			}
 			if ( $age_days > $warn ) {
@@ -1367,14 +1367,14 @@ class OHSA_Engine {
 				return array(
 					'status' => 'warn',
 					// translators: 1: dynamic value
-					'detail' => sprintf( __( 'Last backup was %d days ago.', 'omnihealth-site-auditor' ), $age_days ),
+					'detail' => sprintf( __( 'Last backup was %d days ago.', 'pressvitals-site-auditor' ), $age_days ),
 				);
 			}
 			// translators: %d: days
 			return array(
 				'status' => 'pass',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'Last backup was %d days ago.', 'omnihealth-site-auditor' ), $age_days ),
+				'detail' => sprintf( __( 'Last backup was %d days ago.', 'pressvitals-site-auditor' ), $age_days ),
 			);
 		}
 
@@ -1386,7 +1386,7 @@ class OHSA_Engine {
 		 * @param string[] $plugins Known backup-plugin basenames.
 		 */
 		$known = (array) apply_filters(
-			'ohsa_backup_plugins',
+			'pvsa_backup_plugins',
 			array(
 				'updraftplus/updraftplus.php',
 				'backwpup/backwpup.php',
@@ -1411,13 +1411,13 @@ class OHSA_Engine {
 			if ( in_array( $plugin, $active, true ) ) {
 				return array(
 					'status' => 'warn',
-					'detail' => __( 'A backup plugin is active but no recent backup time could be read — verify its schedule, or report it via the ohsa_last_backup_timestamp filter.', 'omnihealth-site-auditor' ),
+					'detail' => __( 'A backup plugin is active but no recent backup time could be read — verify its schedule, or report it via the pvsa_last_backup_timestamp filter.', 'pressvitals-site-auditor' ),
 				);
 			}
 		}
 		return array(
 			'status' => 'warn',
-			'detail' => __( 'No backup plugin detected — automated backups may not be configured (host-level backups can be reported via the ohsa_last_backup_timestamp filter).', 'omnihealth-site-auditor' ),
+			'detail' => __( 'No backup plugin detected — automated backups may not be configured (host-level backups can be reported via the pvsa_last_backup_timestamp filter).', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -1430,17 +1430,17 @@ class OHSA_Engine {
 		if ( ! function_exists( 'dns_get_record' ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'DNS lookups unavailable; skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'DNS lookups unavailable; skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$domain = (string) wp_parse_url( home_url(), PHP_URL_HOST );
 		$domain = preg_replace( '/^www\./i', '', $domain );
 		/** Filter the domain whose SPF/DMARC records are checked. */
-		$domain = (string) apply_filters( 'ohsa_sending_domain', $domain );
+		$domain = (string) apply_filters( 'pvsa_sending_domain', $domain );
 		if ( '' === $domain ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'No sending domain to check.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'No sending domain to check.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -1476,14 +1476,14 @@ class OHSA_Engine {
 			return array(
 				'status' => 'pass',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'SPF and DMARC present for %s.', 'omnihealth-site-auditor' ), $domain ),
+				'detail' => sprintf( __( 'SPF and DMARC present for %s.', 'pressvitals-site-auditor' ), $domain ),
 			);
 		}
 		// translators: 1: missing records, 2: domain
 		return array(
 			'status' => 'warn',
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'Missing %1$s for %2$s — email may be marked as spam.', 'omnihealth-site-auditor' ), implode( ' + ', $missing ), $domain ),
+			'detail' => sprintf( __( 'Missing %1$s for %2$s — email may be marked as spam.', 'pressvitals-site-auditor' ), implode( ' + ', $missing ), $domain ),
 		);
 	}
 
@@ -1496,10 +1496,10 @@ class OHSA_Engine {
 		if ( '1' !== (string) get_option( 'blog_public' ) ) {
 			return array(
 				'status' => 'fail',
-				'detail' => __( 'Search engine visibility is OFF — the whole site is set to noindex.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Search engine visibility is OFF — the whole site is set to noindex.', 'pressvitals-site-auditor' ),
 			);
 		}
-		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
+		$timeout  = (int) apply_filters( 'pvsa_http_timeout', 8 );
 		$response = wp_remote_get(
 			home_url( '/?ohsa=' . time() ),
 			array(
@@ -1510,26 +1510,26 @@ class OHSA_Engine {
 		if ( is_wp_error( $response ) ) {
 			return array(
 				'status' => 'warn',
-				'detail' => __( 'Could not fetch the homepage to verify indexability.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Could not fetch the homepage to verify indexability.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$body = (string) wp_remote_retrieve_body( $response );
 		if ( preg_match( '/<meta[^>]+name=["\']robots["\'][^>]+content=["\']([^"\']*)["\']/i', $body, $m ) && false !== stripos( $m[1], 'noindex' ) ) {
 			return array(
 				'status' => 'fail',
-				'detail' => __( 'The homepage emits a noindex robots meta tag.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'The homepage emits a noindex robots meta tag.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$x_robots = (string) wp_remote_retrieve_header( $response, 'x-robots-tag' );
 		if ( $x_robots && false !== stripos( $x_robots, 'noindex' ) ) {
 			return array(
 				'status' => 'fail',
-				'detail' => __( 'The homepage sends a noindex X-Robots-Tag header.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'The homepage sends a noindex X-Robots-Tag header.', 'pressvitals-site-auditor' ),
 			);
 		}
 		return array(
 			'status' => 'pass',
-			'detail' => __( 'Homepage is indexable.', 'omnihealth-site-auditor' ),
+			'detail' => __( 'Homepage is indexable.', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -1537,7 +1537,7 @@ class OHSA_Engine {
 	 * Non-core tables for this prefix — surfaces leftovers from removed plugins.
 	 * Low-noise: informational (pass) up to a filterable threshold; excludes
 	 * other-blog tables on multisite and anything allow-listed via
-	 * `ohsa_known_tables`.
+	 * `pvsa_known_tables`.
 	 *
 	 * @return array
 	 */
@@ -1550,7 +1550,7 @@ class OHSA_Engine {
 		if ( empty( $all ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'No tables found for this prefix; skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'No tables found for this prefix; skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -1579,7 +1579,7 @@ class OHSA_Engine {
 		 *
 		 * @param string[] $known Full table names to exclude from the orphan list.
 		 */
-		$expected = array_merge( $expected, (array) apply_filters( 'ohsa_known_tables', array() ) );
+		$expected = array_merge( $expected, (array) apply_filters( 'pvsa_known_tables', array() ) );
 
 		$orphans = array();
 		foreach ( $all as $table ) {
@@ -1597,25 +1597,25 @@ class OHSA_Engine {
 		if ( 0 === $count ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'No non-core tables for this prefix.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'No non-core tables for this prefix.', 'pressvitals-site-auditor' ),
 			);
 		}
 
 		$sample    = implode( ', ', array_slice( $orphans, 0, 8 ) );
-		$threshold = (int) apply_filters( 'ohsa_orphan_tables_warn', 40 );
+		$threshold = (int) apply_filters( 'pvsa_orphan_tables_warn', 40 );
 		if ( $count > $threshold ) {
 			// translators: 1: count, 2: sample table names
 			return array(
 				'status' => 'warn',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( '%1$d non-core tables (sample: %2$s) — review for leftovers from removed plugins; allow-list expected ones via the ohsa_known_tables filter.', 'omnihealth-site-auditor' ), $count, $sample ),
+				'detail' => sprintf( __( '%1$d non-core tables (sample: %2$s) — review for leftovers from removed plugins; allow-list expected ones via the pvsa_known_tables filter.', 'pressvitals-site-auditor' ), $count, $sample ),
 			);
 		}
 		// translators: 1: count, 2: sample table names
 		return array(
 			'status' => 'pass',
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( '%1$d non-core tables present (likely active plugins): %2$s', 'omnihealth-site-auditor' ), $count, $sample ),
+			'detail' => sprintf( __( '%1$d non-core tables present (likely active plugins): %2$s', 'pressvitals-site-auditor' ), $count, $sample ),
 		);
 	}
 
@@ -1633,7 +1633,7 @@ class OHSA_Engine {
 		if ( empty( $updates ) || ! is_array( $updates ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'WordPress core is up to date (or no update data yet).', 'omnihealth-site-auditor' ),
+				'detail' => __( 'WordPress core is up to date (or no update data yet).', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -1647,7 +1647,7 @@ class OHSA_Engine {
 		if ( null === $offer ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'WordPress core is up to date.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'WordPress core is up to date.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -1667,7 +1667,7 @@ class OHSA_Engine {
 			return array(
 				'status' => 'fail',
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'A WordPress maintenance/security update is available (%1$s → %2$s) — apply it promptly.', 'omnihealth-site-auditor' ), $current, $offered ),
+				'detail' => sprintf( __( 'A WordPress maintenance/security update is available (%1$s → %2$s) — apply it promptly.', 'pressvitals-site-auditor' ), $current, $offered ),
 			);
 		}
 		// translators: 1: current version, 2: offered version
@@ -1675,7 +1675,7 @@ class OHSA_Engine {
 			'status' => 'warn',
 			// translators: 1: current version, 2: new version
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'A WordPress feature update is available (%1$s → %2$s).', 'omnihealth-site-auditor' ), $current, '' !== $offered ? $offered : __( 'newer', 'omnihealth-site-auditor' ) ),
+			'detail' => sprintf( __( 'A WordPress feature update is available (%1$s → %2$s).', 'pressvitals-site-auditor' ), $current, '' !== $offered ? $offered : __( 'newer', 'pressvitals-site-auditor' ) ),
 		);
 	}
 
@@ -1697,14 +1697,14 @@ class OHSA_Engine {
 		if ( 0 === $count ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'All plugins are up to date.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'All plugins are up to date.', 'pressvitals-site-auditor' ),
 			);
 		}
 		return array(
 			'status' => 'warn',
 			// translators: %d: number of plugins
 			// translators: 1: dynamic value
-			'detail' => sprintf( _n( '%d plugin update is pending.', '%d plugin updates are pending.', $count, 'omnihealth-site-auditor' ), $count ),
+			'detail' => sprintf( _n( '%d plugin update is pending.', '%d plugin updates are pending.', $count, 'pressvitals-site-auditor' ), $count ),
 		);
 	}
 
@@ -1715,7 +1715,7 @@ class OHSA_Engine {
 	 * @return array
 	 */
 	public function check_user_enumeration_blocked() {
-		$timeout = (int) apply_filters( 'ohsa_http_timeout', 8 );
+		$timeout = (int) apply_filters( 'pvsa_http_timeout', 8 );
 		$issues  = array();
 
 		$author = wp_remote_get(
@@ -1729,22 +1729,22 @@ class OHSA_Engine {
 			$code     = (int) wp_remote_retrieve_response_code( $author );
 			$location = (string) wp_remote_retrieve_header( $author, 'location' );
 			if ( in_array( $code, array( 301, 302 ), true ) && false !== stripos( $location, '/author/' ) ) {
-				$issues[] = __( '?author=N reveals usernames', 'omnihealth-site-auditor' );
+				$issues[] = __( '?author=N reveals usernames', 'pressvitals-site-auditor' );
 			}
 		}
 
-		$rest = wp_remote_get( home_url( '/wp-json/wp/v2/users' ), array( 'timeout' => $timeout ) );
+		$rest = wp_remote_get( rest_url( 'wp/v2/users' ), array( 'timeout' => $timeout ) );
 		if ( ! is_wp_error( $rest ) && 200 === (int) wp_remote_retrieve_response_code( $rest ) ) {
 			$body = json_decode( (string) wp_remote_retrieve_body( $rest ), true );
 			if ( is_array( $body ) && ! empty( $body ) && isset( $body[0]['slug'] ) ) {
-				$issues[] = __( 'the REST users endpoint lists accounts', 'omnihealth-site-auditor' );
+				$issues[] = __( 'the REST users endpoint lists accounts', 'pressvitals-site-auditor' );
 			}
 		}
 
 		if ( empty( $issues ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'User enumeration is not trivially exposed.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'User enumeration is not trivially exposed.', 'pressvitals-site-auditor' ),
 			);
 		}
 		// translators: %s: semicolon-separated list of exposure vectors
@@ -1752,7 +1752,7 @@ class OHSA_Engine {
 			'status' => 'warn',
 			// translators: %s: list of enumeration issues found
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'User enumeration possible: %s.', 'omnihealth-site-auditor' ), implode( '; ', $issues ) ),
+			'detail' => sprintf( __( 'User enumeration possible: %s.', 'pressvitals-site-auditor' ), implode( '; ', $issues ) ),
 		);
 	}
 
@@ -1780,7 +1780,7 @@ class OHSA_Engine {
 		if ( empty( $found ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'No .env file found on disk.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'No .env file found on disk.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -1789,14 +1789,14 @@ class OHSA_Engine {
 			if ( false !== $perms && ( $perms & 0004 ) ) { // others-read bit.
 				return array(
 					'status' => 'fail',
-					'detail' => __( 'A .env file exists and is world-readable — set it to 0600/0640 and keep it out of the web root.', 'omnihealth-site-auditor' ),
+					'detail' => __( 'A .env file exists and is world-readable — set it to 0600/0640 and keep it out of the web root.', 'pressvitals-site-auditor' ),
 				);
 			}
 		}
 
 		return array(
 			'status' => 'warn',
-			'detail' => __( 'A .env file exists on disk — ensure it is outside the web root and not served (see the .env HTTP probe).', 'omnihealth-site-auditor' ),
+			'detail' => __( 'A .env file exists on disk — ensure it is outside the web root and not served (see the .env HTTP probe).', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -1815,7 +1815,7 @@ class OHSA_Engine {
 		if ( '' === $path ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'wp-config.php not found in a standard location; skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'wp-config.php not found in a standard location; skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -1823,7 +1823,7 @@ class OHSA_Engine {
 		if ( false === $perms ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Could not read wp-config.php permissions; skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Could not read wp-config.php permissions; skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
 		$mode = $perms & 0777;
@@ -1833,7 +1833,7 @@ class OHSA_Engine {
 				'status' => 'fail',
 				// translators: %o: octal file mode
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'wp-config.php is world-readable (%o) — set 0640 or 0600.', 'omnihealth-site-auditor' ), $mode ),
+				'detail' => sprintf( __( 'wp-config.php is world-readable (%o) — set 0640 or 0600.', 'pressvitals-site-auditor' ), $mode ),
 			);
 		}
 
@@ -1842,7 +1842,7 @@ class OHSA_Engine {
 			'status' => 'pass',
 			// translators: %o: file permissions
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'wp-config.php permissions are restrictive (%o).', 'omnihealth-site-auditor' ), $mode ),
+			'detail' => sprintf( __( 'wp-config.php permissions are restrictive (%o).', 'pressvitals-site-auditor' ), $mode ),
 		);
 	}
 
@@ -1891,7 +1891,7 @@ class OHSA_Engine {
 				'status' => 'pass',
 				// translators: %d: number of core tables
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'All %d core database tables are present.', 'omnihealth-site-auditor' ), count( $expected ) ),
+				'detail' => sprintf( __( 'All %d core database tables are present.', 'pressvitals-site-auditor' ), count( $expected ) ),
 			);
 		}
 
@@ -1900,7 +1900,7 @@ class OHSA_Engine {
 			'status' => 'fail',
 			// translators: %s: list of missing core tables
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'Missing core database tables: %s', 'omnihealth-site-auditor' ), implode( ', ', $missing ) ),
+			'detail' => sprintf( __( 'Missing core database tables: %s', 'pressvitals-site-auditor' ), implode( ', ', $missing ) ),
 		);
 	}
 
@@ -1958,13 +1958,13 @@ class OHSA_Engine {
 		if ( ! empty( $missing ) || ! empty( $default ) ) {
 			return array(
 				'status' => 'warn',
-				'detail' => __( 'One or more WordPress secret keys are missing or using the default placeholder in wp-config.php.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'One or more WordPress secret keys are missing or using the default placeholder in wp-config.php.', 'pressvitals-site-auditor' ),
 			);
 		}
 
 		return array(
 			'status' => 'pass',
-			'detail' => __( 'All secret keys are defined securely.', 'omnihealth-site-auditor' ),
+			'detail' => __( 'All secret keys are defined securely.', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -1977,13 +1977,13 @@ class OHSA_Engine {
 		if ( defined( 'DISALLOW_FILE_EDIT' ) && DISALLOW_FILE_EDIT ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'File editing is disabled via wp-config.php.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'File editing is disabled via wp-config.php.', 'pressvitals-site-auditor' ),
 			);
 		}
 
 		return array(
 			'status' => 'warn',
-			'detail' => __( 'File editing is currently allowed. Consider defining DISALLOW_FILE_EDIT to true.', 'omnihealth-site-auditor' ),
+			'detail' => __( 'File editing is currently allowed. Consider defining DISALLOW_FILE_EDIT to true.', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -2000,7 +2000,7 @@ class OHSA_Engine {
 		if ( is_wp_error( $response ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Could not reach the uploads directory to test listing.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Could not reach the uploads directory to test listing.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -2008,13 +2008,13 @@ class OHSA_Engine {
 		if ( stripos( $body, 'Index of /' ) !== false ) {
 			return array(
 				'status' => 'warn',
-				'detail' => __( 'Directory listing appears to be enabled on your uploads folder.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Directory listing appears to be enabled on your uploads folder.', 'pressvitals-site-auditor' ),
 			);
 		}
 
 		return array(
 			'status' => 'pass',
-			'detail' => __( 'Directory listing is safely disabled.', 'omnihealth-site-auditor' ),
+			'detail' => __( 'Directory listing is safely disabled.', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -2027,20 +2027,20 @@ class OHSA_Engine {
 		if ( strpos( home_url(), 'https://' ) !== 0 ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Site does not use HTTPS, so FORCE_SSL_ADMIN is not applicable.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Site does not use HTTPS, so FORCE_SSL_ADMIN is not applicable.', 'pressvitals-site-auditor' ),
 			);
 		}
 
 		if ( defined( 'FORCE_SSL_ADMIN' ) && FORCE_SSL_ADMIN ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'FORCE_SSL_ADMIN is properly enabled.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'FORCE_SSL_ADMIN is properly enabled.', 'pressvitals-site-auditor' ),
 			);
 		}
 
 		return array(
 			'status' => 'warn',
-			'detail' => __( 'Your site uses HTTPS but FORCE_SSL_ADMIN is not enabled in wp-config.php.', 'omnihealth-site-auditor' ),
+			'detail' => __( 'Your site uses HTTPS but FORCE_SSL_ADMIN is not enabled in wp-config.php.', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -2061,13 +2061,13 @@ class OHSA_Engine {
 				'status' => 'warn',
 				// translators: %d: number of tables
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( '%d tables are not using the InnoDB storage engine.', 'omnihealth-site-auditor' ), count( $tables ) ),
+				'detail' => sprintf( __( '%d tables are not using the InnoDB storage engine.', 'pressvitals-site-auditor' ), count( $tables ) ),
 			);
 		}
 
 		return array(
 			'status' => 'pass',
-			'detail' => __( 'All database tables are using the InnoDB storage engine.', 'omnihealth-site-auditor' ),
+			'detail' => __( 'All database tables are using the InnoDB storage engine.', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -2088,13 +2088,13 @@ class OHSA_Engine {
 				'status' => 'warn',
 				// translators: %d: number of tables
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( '%d tables are not using the recommended utf8mb4 collation.', 'omnihealth-site-auditor' ), count( $tables ) ),
+				'detail' => sprintf( __( '%d tables are not using the recommended utf8mb4 collation.', 'pressvitals-site-auditor' ), count( $tables ) ),
 			);
 		}
 
 		return array(
 			'status' => 'pass',
-			'detail' => __( 'All database tables use the recommended utf8mb4 collation.', 'omnihealth-site-auditor' ),
+			'detail' => __( 'All database tables use the recommended utf8mb4 collation.', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -2113,13 +2113,13 @@ class OHSA_Engine {
 				'status' => 'warn',
 				// translators: %d: number of themes
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'You have %d theme(s) with pending updates.', 'omnihealth-site-auditor' ), $count ),
+				'detail' => sprintf( __( 'You have %d theme(s) with pending updates.', 'pressvitals-site-auditor' ), $count ),
 			);
 		}
 
 		return array(
 			'status' => 'pass',
-			'detail' => __( 'All themes are up to date.', 'omnihealth-site-auditor' ),
+			'detail' => __( 'All themes are up to date.', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -2146,13 +2146,13 @@ class OHSA_Engine {
 				'status' => 'warn',
 				// translators: 1: number of plugins, 2: number of themes
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'You have %1$d inactive plugins and %2$d inactive themes. Consider removing them to reduce attack surface.', 'omnihealth-site-auditor' ), $inactive, $inactive_themes ),
+				'detail' => sprintf( __( 'You have %1$d inactive plugins and %2$d inactive themes. Consider removing them to reduce attack surface.', 'pressvitals-site-auditor' ), $inactive, $inactive_themes ),
 			);
 		}
 
 		return array(
 			'status' => 'pass',
-			'detail' => __( 'Inactive plugin and theme count is low.', 'omnihealth-site-auditor' ),
+			'detail' => __( 'Inactive plugin and theme count is low.', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -2166,7 +2166,7 @@ class OHSA_Engine {
 		if ( empty( $crons ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'No scheduled events found.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'No scheduled events found.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -2187,13 +2187,13 @@ class OHSA_Engine {
 				'status' => 'warn',
 				// translators: %d: number of overdue tasks
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( '%d scheduled tasks are overdue by more than 30 minutes. WP-Cron may not be running.', 'omnihealth-site-auditor' ), $overdue ),
+				'detail' => sprintf( __( '%d scheduled tasks are overdue by more than 30 minutes. WP-Cron may not be running.', 'pressvitals-site-auditor' ), $overdue ),
 			);
 		}
 
 		return array(
 			'status' => 'pass',
-			'detail' => __( 'WP-Cron is running normally.', 'omnihealth-site-auditor' ),
+			'detail' => __( 'WP-Cron is running normally.', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -2206,13 +2206,13 @@ class OHSA_Engine {
 		if ( wp_using_ext_object_cache() ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Persistent object cache is active.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Persistent object cache is active.', 'pressvitals-site-auditor' ),
 			);
 		}
 
 		return array(
 			'status' => 'pass',
-			'detail' => __( 'Object cache is not explicitly enabled, falling back to database safely.', 'omnihealth-site-auditor' ),
+			'detail' => __( 'Object cache is not explicitly enabled, falling back to database safely.', 'pressvitals-site-auditor' ),
 		);
 	}
 	/**
@@ -2228,14 +2228,14 @@ class OHSA_Engine {
 		 *
 		 * @param int $count Number of tables. Default 5.
 		 */
-		$count = (int) apply_filters( 'ohsa_largest_tables_count', 5 );
+		$count = (int) apply_filters( 'pvsa_largest_tables_count', 5 );
 
 		/**
 		 * Filter the warning threshold for total database size in MB.
 		 *
 		 * @param int $threshold Threshold in MB. Default 500.
 		 */
-		$threshold_mb = (int) apply_filters( 'ohsa_total_db_size_warn_mb', 500 );
+		$threshold_mb = (int) apply_filters( 'pvsa_total_db_size_warn_mb', 500 );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results(
@@ -2248,7 +2248,7 @@ class OHSA_Engine {
 		if ( empty( $results ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Could not determine table sizes.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Could not determine table sizes.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -2270,7 +2270,7 @@ class OHSA_Engine {
 				'status' => 'warn',
 				// translators: 1: total size, 2: top tables list
 				// translators: 1: dynamic value
-				'detail' => sprintf( __( 'Database size is %1$s. Top tables: %2$s', 'omnihealth-site-auditor' ), size_format( $total_bytes, 2 ), implode( ', ', $top_tables ) ),
+				'detail' => sprintf( __( 'Database size is %1$s. Top tables: %2$s', 'pressvitals-site-auditor' ), size_format( $total_bytes, 2 ), implode( ', ', $top_tables ) ),
 			);
 		}
 
@@ -2278,7 +2278,7 @@ class OHSA_Engine {
 			'status' => 'pass',
 			// translators: 1: total size, 2: top tables list
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'Database size is %1$s. Top tables: %2$s', 'omnihealth-site-auditor' ), size_format( $total_bytes, 2 ), implode( ', ', $top_tables ) ),
+			'detail' => sprintf( __( 'Database size is %1$s. Top tables: %2$s', 'pressvitals-site-auditor' ), size_format( $total_bytes, 2 ), implode( ', ', $top_tables ) ),
 		);
 	}
 
@@ -2296,7 +2296,7 @@ class OHSA_Engine {
 		if ( 'utf8mb4' === $charset ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Database connection uses the recommended utf8mb4 charset.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Database connection uses the recommended utf8mb4 charset.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -2304,7 +2304,7 @@ class OHSA_Engine {
 			'status' => 'warn',
 			// translators: %s: current charset
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'Database connection uses "%s", but utf8mb4 is recommended.', 'omnihealth-site-auditor' ), $charset ),
+			'detail' => sprintf( __( 'Database connection uses "%s", but utf8mb4 is recommended.', 'pressvitals-site-auditor' ), $charset ),
 		);
 	}
 
@@ -2317,11 +2317,11 @@ class OHSA_Engine {
 		if ( ! is_ssl() && 0 !== strpos( home_url(), 'https://' ) ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'Site does not enforce HTTPS, mixed content check skipped.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Site does not enforce HTTPS, mixed content check skipped.', 'pressvitals-site-auditor' ),
 			);
 		}
 
-		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
+		$timeout  = (int) apply_filters( 'pvsa_http_timeout', 8 );
 		$response = wp_remote_get(
 			home_url( '/?ohsa=' . time() ),
 			array(
@@ -2333,7 +2333,7 @@ class OHSA_Engine {
 		if ( is_wp_error( $response ) ) {
 			return array(
 				'status' => 'warn',
-				'detail' => __( 'Could not fetch the homepage to verify mixed content.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'Could not fetch the homepage to verify mixed content.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -2343,13 +2343,13 @@ class OHSA_Engine {
 		if ( preg_match( '/(?:src|href)\s*=\s*["\']http:\/\/[^"\']+["\']/i', $body ) ) {
 			return array(
 				'status' => 'warn',
-				'detail' => __( 'The homepage contains hardcoded HTTP asset references (mixed content).', 'omnihealth-site-auditor' ),
+				'detail' => __( 'The homepage contains hardcoded HTTP asset references (mixed content).', 'pressvitals-site-auditor' ),
 			);
 		}
 
 		return array(
 			'status' => 'pass',
-			'detail' => __( 'No mixed content (HTTP assets) detected on the homepage.', 'omnihealth-site-auditor' ),
+			'detail' => __( 'No mixed content (HTTP assets) detected on the homepage.', 'pressvitals-site-auditor' ),
 		);
 	}
 
@@ -2359,7 +2359,7 @@ class OHSA_Engine {
 	 * @return array
 	 */
 	public function check_rest_api_reachable() {
-		$timeout  = (int) apply_filters( 'ohsa_http_timeout', 8 );
+		$timeout  = (int) apply_filters( 'pvsa_http_timeout', 8 );
 		$response = wp_remote_get(
 			rest_url(),
 			array(
@@ -2371,7 +2371,7 @@ class OHSA_Engine {
 		if ( is_wp_error( $response ) ) {
 			return array(
 				'status' => 'warn',
-				'detail' => __( 'The REST API endpoint is unreachable or timing out.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'The REST API endpoint is unreachable or timing out.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -2380,7 +2380,7 @@ class OHSA_Engine {
 		if ( 200 === $status_code ) {
 			return array(
 				'status' => 'pass',
-				'detail' => __( 'The WordPress REST API is reachable and responding normally.', 'omnihealth-site-auditor' ),
+				'detail' => __( 'The WordPress REST API is reachable and responding normally.', 'pressvitals-site-auditor' ),
 			);
 		}
 
@@ -2388,7 +2388,7 @@ class OHSA_Engine {
 			'status' => 'warn',
 			// translators: %d: HTTP status code
 			// translators: 1: dynamic value
-			'detail' => sprintf( __( 'The REST API responded with an unexpected status code (%d).', 'omnihealth-site-auditor' ), $status_code ),
+			'detail' => sprintf( __( 'The REST API responded with an unexpected status code (%d).', 'pressvitals-site-auditor' ), $status_code ),
 		);
 	}
 }

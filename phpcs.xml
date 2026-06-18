@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="OmniHealthSiteAuditor">
-	<description>WordPress Coding Standards for OmniHealth Site Auditor.</description>
+<ruleset name="PressVitalsSiteAuditor">
+	<description>WordPress Coding Standards for PressVitals Site Auditor.</description>
 
 	<!-- What to scan -->
 	<file>.</file>

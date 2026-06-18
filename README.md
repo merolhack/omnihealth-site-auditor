@@ -1,14 +1,14 @@
-# OmniHealth: Deep Site Auditor
+# PressVitals Site Auditor
 
 A **headless-first** WordPress diagnostic engine featuring **22+ proactive probes** for
 performance, security, and DB health — extensible to 48+ via REST API and custom filters.
 
-[![PHPUnit](https://github.com/merolhack/omnihealth-site-auditor/actions/workflows/tests.yml/badge.svg)](https://github.com/merolhack/omnihealth-site-auditor/actions/workflows/tests.yml)
+[![PHPUnit](https://github.com/merolhack/pressvitals-site-auditor/actions/workflows/tests.yml/badge.svg)](https://github.com/merolhack/pressvitals-site-auditor/actions/workflows/tests.yml)
 ![WordPress 6.3+](https://img.shields.io/badge/WordPress-6.3%2B-blue)
 ![PHP 7.4+](https://img.shields.io/badge/PHP-7.4%2B-blue)
 ![License GPL-2.0+](https://img.shields.io/badge/license-GPL--2.0%2B-green)
 
-OmniHealth runs read-only probes across performance, security, deliverability and
+PressVitals runs read-only probes across performance, security, deliverability and
 database health, assigns each a severity tier, rolls them up into a worst-of verdict,
 and exposes the result where automation can consume it: a token-gated REST report, a
 daily cron with email alerts, and a categorized admin dashboard.
@@ -16,7 +16,7 @@ daily cron with email alerts, and a categorized admin dashboard.
 ## How is it different from core's Site Health?
 
 WordPress core's **Tools → Site Health** is an *on-demand, admin-only* status screen
-plus a static debug dump. OmniHealth is built for **continuous, automated,
+plus a static debug dump. PressVitals is built for **continuous, automated,
 machine-readable monitoring and auditing**:
 
 - **Headless / API-first** — a no-auth `/ping` liveness probe and a token-gated
@@ -27,7 +27,7 @@ machine-readable monitoring and auditing**:
   exposure, a web-root stray-backup scanner, baseline security headers, forced-HTTPS,
   XML-RPC exposure, default-`admin` detection, SPF + DMARC email DNS, homepage
   indexability, and database-bloat checks.
-- **Pluggable + configurable** — register your own probes via `ohsa_registered_checks`
+- **Pluggable + configurable** — register your own probes via `pvsa_registered_checks`
   and tune every threshold with filters.
 
 ## Compatibility
@@ -35,17 +35,17 @@ machine-readable monitoring and auditing**:
 No plugin dependencies. Runs on single-site or multisite, **with or without**
 WooCommerce, page builders, or a backup plugin. Optional PHP functions are guarded and
 degrade to a neutral skip rather than erroring. The backup probe is backup-agnostic —
-report any backup solution (plugin, host, or off-site) via `ohsa_last_backup_timestamp`.
+report any backup solution (plugin, host, or off-site) via `pvsa_last_backup_timestamp`.
 
 ## Install
 
 Upload to `wp-content/plugins/`, or **Plugins → Add New → Upload Plugin** with a ZIP,
-then activate. Configure at **Tools → OmniHealth: Deep Site Auditor**.
+then activate. Configure at **Tools → PressVitals Site Auditor**.
 
 ## Extend it
 
 ```php
-add_filter( 'ohsa_registered_checks', function ( array $checks ) {
+add_filter( 'pvsa_registered_checks', function ( array $checks ) {
     $checks['my_queue_backlog'] = array(
         'label'    => 'Job queue backlog',
         'group'    => 'Performance',
@@ -69,7 +69,7 @@ A callback returns `array( 'status' => 'pass'|'warn'|'fail', 'detail' => '…' )
 # Automated tests (Docker + Node) — mirrors CI
 npm -g install @wordpress/env
 wp-env start
-wp-env run tests-cli --env-cwd=wp-content/plugins/omnihealth-site-auditor vendor/bin/phpunit
+wp-env run tests-cli --env-cwd=wp-content/plugins/pressvitals-site-auditor vendor/bin/phpunit
 
 # …or the classic route
 composer install
@@ -85,7 +85,7 @@ CI runs PHPUnit across PHP 7.4 / 8.0 / 8.2 / 8.3.
 ## AI Agents / Assistants
 
 > **Are you an AI, LLM, or coding assistant?**
-> Please read the [`LLM_WIKI.md`](LLM_WIKI.md) and the `omnihealth-architecture-rules` SKILL before making architectural changes. These documents encode the strict Plugin Check rules, environmental testing realities, and release workflows necessary to contribute to this plugin successfully.
+> Please read the [`LLM_WIKI.md`](LLM_WIKI.md) and the `pressvitals-architecture-rules` SKILL before making architectural changes. These documents encode the strict Plugin Check rules, environmental testing realities, and release workflows necessary to contribute to this plugin successfully.
 
 ## License
 

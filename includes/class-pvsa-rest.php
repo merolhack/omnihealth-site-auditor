@@ -2,35 +2,35 @@
 /**
  * REST endpoints.
  *
- *   GET /wp-json/omnihealth/v1/ping
+ *   GET /wp-json/pressvitals/v1/ping
  *     - No authentication. Tiny always-fresh liveness JSON.
  *
- *   GET /wp-json/omnihealth/v1/report?token=<TOKEN>
+ *   GET /wp-json/pressvitals/v1/report?token=<TOKEN>
  *     - Token-gated (constant-time hash_equals) OR a logged-in admin.
  *     - Token may instead be sent in the `X-OHSA-Token` header.
  *     - Runs the engine and returns the full report. HTTP 503 when the
  *       verdict is "fail" so external/CI monitors can alert on it.
  *
- * @package OmniHealthSiteAuditor
+ * @package PressVitalsSiteAuditor
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class OHSA_REST {
+class PVSA_REST {
 
-	const NAMESPACE = 'omnihealth/v1';
+	const NAMESPACE = 'pressvitals/v1';
 
 	/**
-	 * @var OHSA_Engine
+	 * @var PVSA_Engine
 	 */
 	private $engine;
 
 	/**
-	 * @param OHSA_Engine $engine Health-check engine.
+	 * @param PVSA_Engine $engine Health-check engine.
 	 */
-	public function __construct( OHSA_Engine $engine ) {
+	public function __construct( PVSA_Engine $engine ) {
 		$this->engine = $engine;
 	}
 
@@ -82,7 +82,7 @@ class OHSA_REST {
 		return new WP_REST_Response(
 			array(
 				'ok'     => true,
-				'plugin' => 'omnihealth-site-auditor',
+				'plugin' => 'pressvitals-site-auditor',
 				'time'   => gmdate( 'c' ),
 			),
 			200
@@ -102,17 +102,17 @@ class OHSA_REST {
 
 		$provided = (string) $request->get_param( 'token' );
 		if ( '' === $provided ) {
-			$provided = (string) $request->get_header( 'x_ohsa_token' );
+			$provided = (string) $request->get_header( 'x_pvsa_token' );
 		}
-		$stored = (string) get_option( OHSA_OPTION_TOKEN, '' );
+		$stored = (string) get_option( PVSA_OPTION_TOKEN, '' );
 
 		if ( '' !== $stored && '' !== $provided && hash_equals( $stored, $provided ) ) {
 			return true;
 		}
 
 		return new WP_Error(
-			'ohsa_forbidden',
-			__( 'A valid token is required.', 'omnihealth-site-auditor' ),
+			'pvsa_forbidden',
+			__( 'A valid token is required.', 'pressvitals-site-auditor' ),
 			array( 'status' => 401 )
 		);
 	}

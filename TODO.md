@@ -1,7 +1,7 @@
-# OmniHealth: Deep Site Auditor — Roadmap / TODO
+# PressVitals Site Auditor — Roadmap / TODO
 
 Planned probes and engineering work. Probes follow the existing pattern: register
-through the `ohsa_registered_checks` filter with `label` / `group` / `tier` (1 = most
+through the `pvsa_registered_checks` filter with `label` / `group` / `tier` (1 = most
 critical … 5 = informational) / `callback` returning
 `array( 'status' => 'pass'|'warn'|'fail', 'detail' => '…' )`. Keep every check
 read-only, guarded (skip gracefully when a dependency is missing), PCP-clean
@@ -53,7 +53,7 @@ SEO / Performance / Environment, including: `db_connection`, `https_home`,
   `term_relationships`, `termmeta`, `comments`, `commentmeta`, plus multisite tables when
   applicable). **fail** on any missing. (group: Database, tier 1)
 - [x] **P2 `orphaned_tables`** — *(done in v1.2.0)* lists non-core tables (filterable
-  allow-list via `ohsa_known_tables`, warn threshold via `ohsa_orphan_tables_warn`,
+  allow-list via `pvsa_known_tables`, warn threshold via `pvsa_orphan_tables_warn`,
   multisite other-blog tables skipped) so leftovers from removed plugins are visible. (tier 4)
 - [x] **P2 `table_storage_engine`** — flag any MyISAM tables (recommend InnoDB). (tier 4)
 - [x] **P2 `table_collation`** — flag tables not on `utf8mb4` (mojibake / emoji risk). (tier 4)
@@ -87,11 +87,11 @@ SEO / Performance / Environment, including: `db_connection`, `https_home`,
 
 ## Engineering / release
 
-- [x] **Versioning discipline** — keep `Version:` header, the `OHSA_VERSION` constant,
+- [x] **Versioning discipline** — keep `Version:` header, the `PVSA_VERSION` constant,
   readme `Stable tag`, and the `== Changelog ==` entry in sync; add a short
   `RELEASE.md` checklist (and/or a `bin/bump-version.sh`). Follow SemVer.
-- [x] **Settings/data versioning + migrations** — store an `ohsa_db_version` option and
-  run an idempotent upgrade routine on `plugins_loaded` when it lags `OHSA_VERSION`
+- [x] **Settings/data versioning + migrations** — store an `pvsa_db_version` option and
+  run an idempotent upgrade routine on `plugins_loaded` when it lags `PVSA_VERSION`
   (re-seed/migrate settings safely instead of relying only on the activation hook).
 - [x] **WordPress.org release** — add repo secrets `SVN_USERNAME` / `SVN_PASSWORD`,
   submit the slug for review, then tag a release so `deploy.yml` ships to SVN.
@@ -121,6 +121,6 @@ SEO / Performance / Environment, including: `db_connection`, `https_home`,
 ## Admin / UX
 
 - [x] Per-group "Run now" + last-run timestamp; remember collapsed groups.
-- [x] Optional Slack/webhook alert channel alongside email (`ohsa_alert_channels`).
+- [x] Optional Slack/webhook alert channel alongside email (`pvsa_alert_channels`).
 - [x] CSV/JSON export of the latest report from the admin page.
 - [x] Surface each probe's `tier` and `duration_ms` in the report table.

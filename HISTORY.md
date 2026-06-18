@@ -7,7 +7,7 @@
 - **WordPress.org Validation:** Ran the official Plugin Check (PCP) tool to prepare for catalog submission.
 - **Code Standards & Compatibility Fixes:**
   - Removed deprecated `load_plugin_textdomain()` (WP automatically loads it since 4.6).
-  - Prefixed global variables in `uninstall.php` (`$ohsa_site_ids`).
+  - Prefixed global variables in `uninstall.php` (`$pvsa_site_ids`).
   - Added required `/* translators: ... */` comments preceding all `__()` calls containing placeholders like `%s`.
   - Removed redundant `Author URI` to fix WP.org's duplicate plugin/author URI error, pointing `Author URI` directly to the developer's personal GitHub page.
 - **Build System:** Created an isolated Python script to generate the distribution `.zip` file. This leverages `.distignore` to strictly strip development/CI files (`.wp-env.json`, `phpunit.xml.dist`, `.github/`, test scripts) from the final package before uploading to the WordPress catalog.

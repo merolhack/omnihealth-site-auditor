@@ -6,7 +6,7 @@
     beStrictAboutTestsThatDoNotTestAnything="false"
 >
     <testsuites>
-        <testsuite name="OmniHealth Site Auditor">
+        <testsuite name="PressVitals Site Auditor">
             <directory prefix="test-" suffix=".php">./tests/</directory>
         </testsuite>
     </testsuites>

@@ -1,11 +1,11 @@
-# Deploy OmniHealth: Deep Site Auditor to the WordPress.org plugin SVN on each release.
+# Deploy PressVitals Site Auditor to the WordPress.org plugin SVN on each release.
 #
 # NOTE: this workflow is intended to run from the plugin's OWN GitHub repo,
-# where the plugin files (omnihealth-site-auditor.php, includes/, readme.txt, …)
+# where the plugin files (pressvitals-site-auditor.php, includes/, readme.txt, …)
 # sit at the repository root. While the plugin lives inside the freelancemexico
 # monorepo it is DORMANT — GitHub only runs workflows found at the repository
 # root `.github/workflows/`, so this file does nothing here. When you split the
-# `omnihealth-site-auditor/` folder into its own repository, this workflow is already
+# `pressvitals-site-auditor/` folder into its own repository, this workflow is already
 # in the right place.
 #
 # One-time setup in the plugin's repo (Settings → Secrets and variables → Actions):
@@ -13,7 +13,7 @@
 #   - SVN_PASSWORD : your WordPress.org account password
 #
 # Release flow:
-#   1. Bump the version in BOTH omnihealth-site-auditor.php (header + OHSA_VERSION)
+#   1. Bump the version in BOTH pressvitals-site-auditor.php (header + PVSA_VERSION)
 #      and readme.txt (Stable tag), and add a Changelog entry.
 #   2. Commit, then create a GitHub Release whose tag equals the version
 #      (e.g. tag `1.0.1`). Publishing the release triggers this workflow.
@@ -47,10 +47,10 @@ jobs:
         env:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          SLUG: omnihealth-site-auditor
+          SLUG: pressvitals-site-auditor
           # If you keep the plugin in a subdirectory of the repo instead of the
           # root, set BUILD_DIR to that path, e.g.:
-          # BUILD_DIR: ./omnihealth-site-auditor
+          # BUILD_DIR: ./pressvitals-site-auditor
 
   # OPTIONAL: update only the readme + /.wordpress-org assets WITHOUT cutting a
   # new release (handy for fixing a typo or swapping the banner). Uncomment to use.
@@ -64,4 +64,4 @@ jobs:
   #       env:
   #         SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
   #         SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-  #         SLUG: omnihealth-site-auditor
+  #         SLUG: pressvitals-site-auditor

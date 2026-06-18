@@ -1,29 +1,29 @@
 <?php
 /**
- * Tests for OHSA_Engine — the registry, the worst-of verdict aggregation,
+ * Tests for PVSA_Engine — the registry, the worst-of verdict aggregation,
  * defensive execution, settings, and a few deterministic built-in probes.
  *
- * @package OmniHealthSiteAuditor
+ * @package PressVitalsSiteAuditor
  */
 
-class Test_OHSA_Engine extends WP_UnitTestCase {
+class Test_PVSA_Engine extends WP_UnitTestCase {
 
 	/**
-	 * @var OHSA_Engine
+	 * @var PVSA_Engine
 	 */
 	private $engine;
 
 	public function set_up() {
 		parent::set_up();
 		// Start from a clean registry, then register the built-in checks.
-		remove_all_filters( 'ohsa_registered_checks' );
-		$this->engine = new OHSA_Engine();
+		remove_all_filters( 'pvsa_registered_checks' );
+		$this->engine = new PVSA_Engine();
 		$this->engine->init();
 	}
 
 	public function tear_down() {
-		remove_all_filters( 'ohsa_registered_checks' );
-		remove_all_filters( 'ohsa_last_backup_timestamp' );
+		remove_all_filters( 'pvsa_registered_checks' );
+		remove_all_filters( 'pvsa_last_backup_timestamp' );
 		remove_all_filters( 'pre_http_request' );
 		delete_site_transient( 'update_core' );
 		delete_site_transient( 'update_plugins' );
@@ -36,9 +36,9 @@ class Test_OHSA_Engine extends WP_UnitTestCase {
 	 * @param array $checks Map of id => definition.
 	 */
 	private function register_only( array $checks ) {
-		remove_all_filters( 'ohsa_registered_checks' );
+		remove_all_filters( 'pvsa_registered_checks' );
 		add_filter(
-			'ohsa_registered_checks',
+			'pvsa_registered_checks',
 			static function () use ( $checks ) {
 				return $checks;
 			}
@@ -77,7 +77,7 @@ class Test_OHSA_Engine extends WP_UnitTestCase {
 
 	public function test_get_checks_drops_invalid_definitions() {
 		add_filter(
-			'ohsa_registered_checks',
+			'pvsa_registered_checks',
 			static function ( $checks ) {
 				$checks['no_callback']  = array( 'label' => 'Nope', 'group' => 'X', 'tier' => 3 );
 				$checks['not_callable'] = array( 'callback' => 'definitely_not_a_function_xyz' );
@@ -189,7 +189,7 @@ class Test_OHSA_Engine extends WP_UnitTestCase {
 	}
 
 	public function test_default_settings_keys() {
-		$defaults = OHSA_Engine::default_settings();
+		$defaults = PVSA_Engine::default_settings();
 		foreach ( array( 'error_log_warn_mb', 'error_log_fail_mb', 'autoload_warn_mb', 'autoload_fail_mb', 'alert_email' ) as $key ) {
 			$this->assertArrayHasKey( $key, $defaults );
 		}
@@ -197,12 +197,12 @@ class Test_OHSA_Engine extends WP_UnitTestCase {
 
 	public function test_get_setting_filter_override() {
 		add_filter(
-			'ohsa_setting_error_log_warn_mb',
+			'pvsa_setting_error_log_warn_mb',
 			static function () {
 				return 999;
 			}
 		);
-		$this->assertSame( 999, OHSA_Engine::get_setting( 'error_log_warn_mb', 10 ) );
+		$this->assertSame( 999, PVSA_Engine::get_setting( 'error_log_warn_mb', 10 ) );
 	}
 
 	public function test_php_version_check_matches_runtime() {
@@ -233,7 +233,7 @@ class Test_OHSA_Engine extends WP_UnitTestCase {
 
 	public function test_backup_recency_passes_with_recent_filter_timestamp() {
 		add_filter(
-			'ohsa_last_backup_timestamp',
+			'pvsa_last_backup_timestamp',
 			static function () {
 				return time() - DAY_IN_SECONDS;
 			}
@@ -243,7 +243,7 @@ class Test_OHSA_Engine extends WP_UnitTestCase {
 
 	public function test_backup_recency_fails_with_stale_filter_timestamp() {
 		add_filter(
-			'ohsa_last_backup_timestamp',
+			'pvsa_last_backup_timestamp',
 			static function () {
 				return time() - ( 30 * DAY_IN_SECONDS );
 			}

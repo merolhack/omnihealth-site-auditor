@@ -1,5 +1,5 @@
 {
-    "name": "omnihealth/site-auditor",
+    "name": "pressvitals/site-auditor",
     "description": "A headless-first WordPress diagnostic engine with 22+ proactive probes for performance, security, and DB health.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
@@ -10,7 +10,7 @@
         "security",
         "rest-api"
     ],
-    "homepage": "https://wordpress.org/plugins/omnihealth-site-auditor/",
+    "homepage": "https://wordpress.org/plugins/pressvitals-site-auditor/",
     "require": {
         "php": ">=7.4"
     },
@@ -24,7 +24,7 @@
     "scripts": {
         "test": "phpunit",
         "lint": "find . -path ./vendor -prune -o -name '*.php' -print0 | xargs -0 -n1 -P4 php -l",
-        "make-pot": "wp i18n make-pot . languages/omnihealth-site-auditor.pot",
+        "make-pot": "wp i18n make-pot . languages/pressvitals-site-auditor.pot",
         "phpcs": "phpcs",
         "phpcbf": "phpcbf"
     },

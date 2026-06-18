@@ -1,9 +1,9 @@
-# Copyright (C) 2026 OmniHealth Contributors
+# Copyright (C) 2026 PressVitals Contributors
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: OmniHealth: Deep Site Auditor 1.2.1\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/omnihealth-site-auditor\n"
+"Project-Id-Version: PressVitals Site Auditor 1.2.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pressvitals-site-auditor\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -12,466 +12,466 @@ msgstr ""
 "POT-Creation-Date: 2026-06-16T22:18:52+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: omnihealth-site-auditor\n"
+"X-Domain: pressvitals-site-auditor\n"
 
 #. Plugin Name of the plugin
-#: omnihealth-site-auditor.php
-#: includes/class-ohsa-admin.php:48
-#: includes/class-ohsa-admin.php:49
-#: includes/class-ohsa-admin.php:198
-msgid "OmniHealth: Deep Site Auditor"
+#: pressvitals-site-auditor.php
+#: includes/class-pvsa-admin.php:48
+#: includes/class-pvsa-admin.php:49
+#: includes/class-pvsa-admin.php:198
+msgid "PressVitals Site Auditor"
 msgstr ""
 
 #. Plugin URI of the plugin
-#: omnihealth-site-auditor.php
-msgid "https://wordpress.org/plugins/omnihealth-site-auditor/"
+#: pressvitals-site-auditor.php
+msgid "https://wordpress.org/plugins/pressvitals-site-auditor/"
 msgstr ""
 
 #. Description of the plugin
-#: omnihealth-site-auditor.php
+#: pressvitals-site-auditor.php
 msgid "A headless-first diagnostic engine featuring 22+ proactive probes for performance, security, and DB health — extensible to 48+ via REST API and custom filters."
 msgstr ""
 
 #. Author of the plugin
-#: omnihealth-site-auditor.php
-msgid "OmniHealth Contributors"
+#: pressvitals-site-auditor.php
+msgid "PressVitals Contributors"
 msgstr ""
 
 #. Author URI of the plugin
-#: omnihealth-site-auditor.php
+#: pressvitals-site-auditor.php
 msgid "https://merolhack.github.io/"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:72
+#: includes/class-pvsa-admin.php:72
 msgid "Thresholds & alerts"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:78
+#: includes/class-pvsa-admin.php:78
 msgid "Error log warn (MB)"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:79
+#: includes/class-pvsa-admin.php:79
 msgid "Error log fail (MB)"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:80
+#: includes/class-pvsa-admin.php:80
 msgid "Autoload warn (MB)"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:81
+#: includes/class-pvsa-admin.php:81
 msgid "Autoload fail (MB)"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:96
+#: includes/class-pvsa-admin.php:96
 msgid "Alert email"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:158
-#: includes/class-ohsa-admin.php:174
+#: includes/class-pvsa-admin.php:158
+#: includes/class-pvsa-admin.php:174
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: includes/class-ohsa-admin.php:189
+#: includes/class-pvsa-admin.php:189
 msgid "You are not allowed to view this page."
 msgstr ""
 
-#: includes/class-ohsa-admin.php:200
+#: includes/class-pvsa-admin.php:200
 msgid "Headless-first, scheduled monitoring: severity-tiered probes, email alerts, and a token-gated REST report. It complements WordPress core’s built-in Site Health by adding automation, alerting, and security/ops audit probes core does not run."
 msgstr ""
 
-#: includes/class-ohsa-admin.php:201
+#: includes/class-pvsa-admin.php:201
 msgid "Open the built-in Site Health screen"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:205
+#: includes/class-pvsa-admin.php:205
 msgid "Health check executed."
 msgstr ""
 
-#: includes/class-ohsa-admin.php:207
+#: includes/class-pvsa-admin.php:207
 msgid "Token rotated. Update any external probe that uses it."
 msgstr ""
 
-#: includes/class-ohsa-admin.php:214
+#: includes/class-pvsa-admin.php:214
 msgid "Run now"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:221
+#: includes/class-pvsa-admin.php:221
 msgid "Settings"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:231
+#: includes/class-pvsa-admin.php:231
 msgid "External probe token"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:232
+#: includes/class-pvsa-admin.php:232
 msgid "Used by external/CI monitors to call the report endpoint:"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:237
+#: includes/class-pvsa-admin.php:237
 msgid "Rotate the token? External probes using the old one will stop working."
 msgstr ""
 
-#: includes/class-ohsa-admin.php:238
+#: includes/class-pvsa-admin.php:238
 msgid "Rotate token"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:252
+#: includes/class-pvsa-admin.php:252
 msgid "No report yet. Click \"Run now\"."
 msgstr ""
 
 #. translators: 1: pass, 2: warn, 3: fail
-#: includes/class-ohsa-admin.php:262
+#: includes/class-pvsa-admin.php:262
 #, php-format
 msgid "%1$d pass, %2$d warn, %3$d fail"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:273
-#: includes/class-ohsa-engine.php:140
+#: includes/class-pvsa-admin.php:273
+#: includes/class-pvsa-engine.php:140
 msgid "Other"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:326
+#: includes/class-pvsa-admin.php:326
 msgid "Status"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:327
+#: includes/class-pvsa-admin.php:327
 msgid "Check"
 msgstr ""
 
-#: includes/class-ohsa-admin.php:328
+#: includes/class-pvsa-admin.php:328
 msgid "Detail"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:77
-#: includes/class-ohsa-engine.php:199
-#: includes/class-ohsa-engine.php:205
+#: includes/class-pvsa-engine.php:77
+#: includes/class-pvsa-engine.php:199
+#: includes/class-pvsa-engine.php:205
 msgid "Availability"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:78
-#: includes/class-ohsa-engine.php:211
-#: includes/class-ohsa-engine.php:269
-#: includes/class-ohsa-engine.php:275
-#: includes/class-ohsa-engine.php:281
-#: includes/class-ohsa-engine.php:287
-#: includes/class-ohsa-engine.php:293
-#: includes/class-ohsa-engine.php:299
-#: includes/class-ohsa-engine.php:305
-#: includes/class-ohsa-engine.php:335
-#: includes/class-ohsa-engine.php:347
-#: includes/class-ohsa-engine.php:353
-#: includes/class-ohsa-engine.php:383
-#: includes/class-ohsa-engine.php:389
-#: includes/class-ohsa-engine.php:395
-#: includes/class-ohsa-engine.php:401
-#: includes/class-ohsa-engine.php:407
+#: includes/class-pvsa-engine.php:78
+#: includes/class-pvsa-engine.php:211
+#: includes/class-pvsa-engine.php:269
+#: includes/class-pvsa-engine.php:275
+#: includes/class-pvsa-engine.php:281
+#: includes/class-pvsa-engine.php:287
+#: includes/class-pvsa-engine.php:293
+#: includes/class-pvsa-engine.php:299
+#: includes/class-pvsa-engine.php:305
+#: includes/class-pvsa-engine.php:335
+#: includes/class-pvsa-engine.php:347
+#: includes/class-pvsa-engine.php:353
+#: includes/class-pvsa-engine.php:383
+#: includes/class-pvsa-engine.php:389
+#: includes/class-pvsa-engine.php:395
+#: includes/class-pvsa-engine.php:401
+#: includes/class-pvsa-engine.php:407
 msgid "Security"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:79
-#: includes/class-ohsa-engine.php:217
-#: includes/class-ohsa-engine.php:223
+#: includes/class-pvsa-engine.php:79
+#: includes/class-pvsa-engine.php:217
+#: includes/class-pvsa-engine.php:223
 msgid "Errors"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:80
-#: includes/class-ohsa-engine.php:229
-#: includes/class-ohsa-engine.php:311
-#: includes/class-ohsa-engine.php:359
-#: includes/class-ohsa-engine.php:365
-#: includes/class-ohsa-engine.php:413
-#: includes/class-ohsa-engine.php:419
-#: includes/class-ohsa-engine.php:425
-#: includes/class-ohsa-engine.php:431
+#: includes/class-pvsa-engine.php:80
+#: includes/class-pvsa-engine.php:229
+#: includes/class-pvsa-engine.php:311
+#: includes/class-pvsa-engine.php:359
+#: includes/class-pvsa-engine.php:365
+#: includes/class-pvsa-engine.php:413
+#: includes/class-pvsa-engine.php:419
+#: includes/class-pvsa-engine.php:425
+#: includes/class-pvsa-engine.php:431
 msgid "Database"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:81
-#: includes/class-ohsa-engine.php:235
-#: includes/class-ohsa-engine.php:241
-#: includes/class-ohsa-engine.php:317
+#: includes/class-pvsa-engine.php:81
+#: includes/class-pvsa-engine.php:235
+#: includes/class-pvsa-engine.php:241
+#: includes/class-pvsa-engine.php:317
 msgid "Files"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:82
-#: includes/class-ohsa-engine.php:323
+#: includes/class-pvsa-engine.php:82
+#: includes/class-pvsa-engine.php:323
 msgid "Email"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:83
-#: includes/class-ohsa-engine.php:329
+#: includes/class-pvsa-engine.php:83
+#: includes/class-pvsa-engine.php:329
 msgid "SEO"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:84
-#: includes/class-ohsa-engine.php:247
-#: includes/class-ohsa-engine.php:253
-#: includes/class-ohsa-engine.php:449
-#: includes/class-ohsa-engine.php:455
+#: includes/class-pvsa-engine.php:84
+#: includes/class-pvsa-engine.php:247
+#: includes/class-pvsa-engine.php:253
+#: includes/class-pvsa-engine.php:449
+#: includes/class-pvsa-engine.php:455
 msgid "Performance"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:85
-#: includes/class-ohsa-engine.php:259
-#: includes/class-ohsa-engine.php:341
-#: includes/class-ohsa-engine.php:371
-#: includes/class-ohsa-engine.php:377
-#: includes/class-ohsa-engine.php:437
-#: includes/class-ohsa-engine.php:443
+#: includes/class-pvsa-engine.php:85
+#: includes/class-pvsa-engine.php:259
+#: includes/class-pvsa-engine.php:341
+#: includes/class-pvsa-engine.php:371
+#: includes/class-pvsa-engine.php:377
+#: includes/class-pvsa-engine.php:437
+#: includes/class-pvsa-engine.php:443
 msgid "Environment"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:166
+#: includes/class-pvsa-engine.php:166
 msgid "Malformed check result."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:175
+#: includes/class-pvsa-engine.php:175
 msgid "Check threw an exception."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:198
+#: includes/class-pvsa-engine.php:198
 msgid "Database connection"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:204
+#: includes/class-pvsa-engine.php:204
 msgid "Homepage over HTTPS"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:210
+#: includes/class-pvsa-engine.php:210
 msgid "Error display off in production"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:216
+#: includes/class-pvsa-engine.php:216
 msgid "Error log size"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:222
+#: includes/class-pvsa-engine.php:222
 msgid "Recent PHP fatal errors"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:228
+#: includes/class-pvsa-engine.php:228
 msgid "Autoloaded options size"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:234
+#: includes/class-pvsa-engine.php:234
 msgid "Free disk space"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:240
+#: includes/class-pvsa-engine.php:240
 msgid "Uploads directory writable"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:246
+#: includes/class-pvsa-engine.php:246
 msgid "PHP memory limit"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:252
+#: includes/class-pvsa-engine.php:252
 msgid "Persistent object cache"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:258
+#: includes/class-pvsa-engine.php:258
 msgid "Supported PHP version"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:268
+#: includes/class-pvsa-engine.php:268
 msgid ".env file not web-accessible"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:274
+#: includes/class-pvsa-engine.php:274
 msgid "No stray backup/diagnostic files in web root"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:280
+#: includes/class-pvsa-engine.php:280
 msgid "TLS certificate expiry"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:286
+#: includes/class-pvsa-engine.php:286
 msgid "Baseline security headers"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:292
+#: includes/class-pvsa-engine.php:292
 msgid "HTTPS is forced"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:298
+#: includes/class-pvsa-engine.php:298
 msgid "XML-RPC exposure"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:304
+#: includes/class-pvsa-engine.php:304
 msgid "No default \"admin\" username"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:310
+#: includes/class-pvsa-engine.php:310
 msgid "Database bloat"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:316
+#: includes/class-pvsa-engine.php:316
 msgid "Recent backup"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:322
+#: includes/class-pvsa-engine.php:322
 msgid "Email DNS (SPF + DMARC)"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:328
+#: includes/class-pvsa-engine.php:328
 msgid "Homepage is indexable"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:334
+#: includes/class-pvsa-engine.php:334
 msgid "HTTPS Mixed Content"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:340
+#: includes/class-pvsa-engine.php:340
 msgid "REST API availability"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:346
+#: includes/class-pvsa-engine.php:346
 msgid ".env file not present/exposed on disk"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:352
+#: includes/class-pvsa-engine.php:352
 msgid "wp-config.php permissions"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:358
+#: includes/class-pvsa-engine.php:358
 msgid "Core database tables present"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:364
+#: includes/class-pvsa-engine.php:364
 msgid "Non-core database tables"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:370
+#: includes/class-pvsa-engine.php:370
 msgid "WordPress core up to date"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:376
+#: includes/class-pvsa-engine.php:376
 msgid "Plugin updates"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:382
+#: includes/class-pvsa-engine.php:382
 msgid "User enumeration not exposed"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:388
+#: includes/class-pvsa-engine.php:388
 msgid "Secret keys defined"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:394
+#: includes/class-pvsa-engine.php:394
 msgid "File editing disabled"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:400
+#: includes/class-pvsa-engine.php:400
 msgid "Directory listing disabled"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:406
+#: includes/class-pvsa-engine.php:406
 msgid "Force SSL for Admin"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:412
+#: includes/class-pvsa-engine.php:412
 msgid "Database storage engine"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:418
+#: includes/class-pvsa-engine.php:418
 msgid "Database collation"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:424
+#: includes/class-pvsa-engine.php:424
 msgid "Largest database tables"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:430
+#: includes/class-pvsa-engine.php:430
 msgid "Database client charset"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:436
+#: includes/class-pvsa-engine.php:436
 msgid "Theme updates"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:442
+#: includes/class-pvsa-engine.php:442
 msgid "Inactive plugins and themes"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:448
+#: includes/class-pvsa-engine.php:448
 msgid "Scheduled events (WP-Cron)"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:454
+#: includes/class-pvsa-engine.php:454
 msgid "API-backed transients"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:478
+#: includes/class-pvsa-engine.php:478
 msgid "MySQL responds to SELECT 1."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:482
+#: includes/class-pvsa-engine.php:482
 msgid "MySQL did not return a row for SELECT 1."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:496
-#: includes/class-ohsa-engine.php:1143
+#: includes/class-pvsa-engine.php:496
+#: includes/class-pvsa-engine.php:1143
 msgid "Site address is not HTTPS."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:505
+#: includes/class-pvsa-engine.php:505
 msgid "Homepage request failed: "
 msgstr ""
 
-#: includes/class-ohsa-engine.php:513
+#: includes/class-pvsa-engine.php:513
 msgid "Homepage returns HTTP 200 over HTTPS."
 msgstr ""
 
 #. translators: %d: HTTP status code
-#: includes/class-ohsa-engine.php:518
+#: includes/class-pvsa-engine.php:518
 #, php-format
 msgid "Homepage returned HTTP %d."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:534
+#: includes/class-pvsa-engine.php:534
 msgid "display_errors is on — PHP errors may leak to visitors."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:538
+#: includes/class-pvsa-engine.php:538
 msgid "Error display is off for visitors."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:552
-#: includes/class-ohsa-engine.php:596
+#: includes/class-pvsa-engine.php:552
+#: includes/class-pvsa-engine.php:596
 msgid "No readable error log found."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:566
+#: includes/class-pvsa-engine.php:566
 #, php-format
 msgid "%1$s is %2$s — rotate or truncate it."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:573
+#: includes/class-pvsa-engine.php:573
 #, php-format
 msgid "%1$s is %2$s — growing."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:579
+#: includes/class-pvsa-engine.php:579
 #, php-format
 msgid "%1$s is %2$s."
 msgstr ""
 
 #. translators: %s: human-readable size
-#: includes/class-ohsa-engine.php:606
+#: includes/class-pvsa-engine.php:606
 #, php-format
 msgid "Error log too large to scan (%s); inspect it manually."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:617
+#: includes/class-pvsa-engine.php:617
 msgid "Filesystem API unavailable; skipped."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:625
+#: includes/class-pvsa-engine.php:625
 msgid "Could not read error log; skipped."
 msgstr ""
 
 #. translators: 1: error count, 2: lookback hours
-#: includes/class-ohsa-engine.php:652
+#: includes/class-pvsa-engine.php:652
 #, php-format
 msgid "%1$d PHP fatal/parse error in the last %2$d h."
 msgid_plural "%1$d PHP fatal/parse errors in the last %2$d h."
@@ -479,625 +479,613 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: lookback hours
-#: includes/class-ohsa-engine.php:661
+#: includes/class-pvsa-engine.php:661
 #, php-format
 msgid "No PHP fatal/parse errors in the last %d h."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:684
+#: includes/class-pvsa-engine.php:684
 #, php-format
 msgid "Autoloaded options total %s — trim them."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:691
-#: includes/class-ohsa-engine.php:697
+#: includes/class-pvsa-engine.php:691
+#: includes/class-pvsa-engine.php:697
 #, php-format
 msgid "Autoloaded options total %s."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:710
+#: includes/class-pvsa-engine.php:710
 msgid "disk_free_space() unavailable; skipped."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:717
+#: includes/class-pvsa-engine.php:717
 msgid "Could not read free disk space; skipped."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:725
+#: includes/class-pvsa-engine.php:725
 #, php-format
 msgid "Only %s free on the WordPress volume."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:731
+#: includes/class-pvsa-engine.php:731
 #, php-format
 msgid "%s free on the WordPress volume."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:751
+#: includes/class-pvsa-engine.php:751
 msgid "Uploads directory is writable."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:755
+#: includes/class-pvsa-engine.php:755
 msgid "Uploads directory is not writable."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:773
-#: includes/class-ohsa-engine.php:779
+#: includes/class-pvsa-engine.php:773
+#: includes/class-pvsa-engine.php:779
 #, php-format
 msgid "PHP memory_limit is %s."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:792
+#: includes/class-pvsa-engine.php:792
 msgid "No persistent object cache is in use."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:804
+#: includes/class-pvsa-engine.php:804
 msgid "Persistent object cache round-trip OK."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:808
+#: includes/class-pvsa-engine.php:808
 msgid "Object cache enabled but the round-trip failed."
 msgstr ""
 
 #. translators: %s: PHP version
-#: includes/class-ohsa-engine.php:843
+#: includes/class-pvsa-engine.php:843
 #, php-format
 msgid "PHP %s is end-of-life — upgrade immediately."
 msgstr ""
 
 #. translators: %s: PHP version
-#: includes/class-ohsa-engine.php:850
+#: includes/class-pvsa-engine.php:850
 #, php-format
 msgid "PHP %s is actively supported."
 msgstr ""
 
 #. translators: %s: PHP version
-#: includes/class-ohsa-engine.php:861
+#: includes/class-pvsa-engine.php:861
 #, php-format
 msgid "PHP %s is end-of-life — upgrade."
 msgstr ""
 
 #. translators: %s: PHP version
-#: includes/class-ohsa-engine.php:871
+#: includes/class-pvsa-engine.php:871
 #, php-format
 msgid "PHP %s is nearing its end-of-life date — plan an upgrade."
 msgstr ""
 
 #. translators: %s: PHP version
-#: includes/class-ohsa-engine.php:878
+#: includes/class-pvsa-engine.php:878
 #, php-format
 msgid "PHP %s is fully supported."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:897
+#: includes/class-pvsa-engine.php:897
 msgid "Could not probe .env; skipped."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:905
+#: includes/class-pvsa-engine.php:905
 #, php-format
 msgid ".env is not served (HTTP %d)."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:913
+#: includes/class-pvsa-engine.php:913
 msgid ".env appears publicly readable and may expose secrets — block it now."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:918
+#: includes/class-pvsa-engine.php:918
 msgid ".env returns HTTP 200 — verify it is not exposing secrets."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:924
+#: includes/class-pvsa-engine.php:924
 #, php-format
 msgid ".env returns HTTP %d."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:940
+#: includes/class-pvsa-engine.php:940
 msgid "Web root not readable for scan; skipped."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:947
+#: includes/class-pvsa-engine.php:947
 msgid "Web-root scan unavailable; skipped."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:979
+#: includes/class-pvsa-engine.php:979
 msgid "No stray backup/diagnostic files in the web root."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:993
+#: includes/class-pvsa-engine.php:993
 #, php-format
 msgid "%1$d stray file(s) including secret-bearing backups: %2$s"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:999
+#: includes/class-pvsa-engine.php:999
 #, php-format
 msgid "%1$d stray file(s) in the web root: %2$s"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1014
+#: includes/class-pvsa-engine.php:1014
 msgid "Site is not using HTTPS; skipped TLS expiry check."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1020
+#: includes/class-pvsa-engine.php:1020
 msgid "TLS inspection unavailable; skipped."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1040
+#: includes/class-pvsa-engine.php:1040
 msgid "Could not open a TLS connection to read the certificate."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1048
+#: includes/class-pvsa-engine.php:1048
 msgid "Could not capture the TLS certificate."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1055
+#: includes/class-pvsa-engine.php:1055
 msgid "Could not parse the certificate expiry."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1064
+#: includes/class-pvsa-engine.php:1064
 msgid "TLS certificate has expired."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1071
+#: includes/class-pvsa-engine.php:1071
 #, php-format
 msgid "TLS certificate expires in %d days — renew now."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1078
+#: includes/class-pvsa-engine.php:1078
 #, php-format
 msgid "TLS certificate expires in %d days."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1084
+#: includes/class-pvsa-engine.php:1084
 #, php-format
 msgid "TLS certificate valid for %d more days."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1099
+#: includes/class-pvsa-engine.php:1099
 msgid "Could not fetch the homepage (loopback/local environment issue); skipped."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1117
+#: includes/class-pvsa-engine.php:1117
 msgid "All baseline security headers are present."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1123
+#: includes/class-pvsa-engine.php:1123
 #, php-format
 msgid "Missing security headers: %s"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1137
+#: includes/class-pvsa-engine.php:1137
 msgid "No host to check."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1151
+#: includes/class-pvsa-engine.php:1151
 msgid "Site is HTTPS; the HTTP probe was inconclusive."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1159
+#: includes/class-pvsa-engine.php:1159
 msgid "HTTP requests redirect to HTTPS."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1165
+#: includes/class-pvsa-engine.php:1165
 msgid "HTTP serves 200 without redirecting to HTTPS."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1171
+#: includes/class-pvsa-engine.php:1171
 #, php-format
 msgid "HTTP returns %d (no plain-HTTP content)."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1186
+#: includes/class-pvsa-engine.php:1186
 msgid "xmlrpc.php probe inconclusive."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1195
+#: includes/class-pvsa-engine.php:1195
 #, php-format
 msgid "xmlrpc.php is blocked (HTTP %d)."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1201
+#: includes/class-pvsa-engine.php:1201
 msgid "xmlrpc.php is enabled — an attack surface for brute-force amplification; disable if unused."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1207
+#: includes/class-pvsa-engine.php:1207
 #, php-format
 msgid "xmlrpc.php returns HTTP %d."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1221
+#: includes/class-pvsa-engine.php:1221
 msgid "No user with the login \"admin\"."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1226
+#: includes/class-pvsa-engine.php:1226
 msgid "A user named \"admin\" exists — a top brute-force target; rename it."
 msgstr ""
 
 #. translators: %d: count
-#: includes/class-ohsa-engine.php:1253
+#: includes/class-pvsa-engine.php:1253
 #, php-format
 msgid "%d expired transients"
 msgstr ""
 
 #. translators: %d: count
-#: includes/class-ohsa-engine.php:1257
+#: includes/class-pvsa-engine.php:1257
 #, php-format
 msgid "%d post revisions"
 msgstr ""
 
 #. translators: %d: count
-#: includes/class-ohsa-engine.php:1261
+#: includes/class-pvsa-engine.php:1261
 #, php-format
 msgid "%d spam/trash comments"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1266
+#: includes/class-pvsa-engine.php:1266
 msgid "Database is tidy."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1272
+#: includes/class-pvsa-engine.php:1272
 #, php-format
 msgid "Cleanup recommended: %s."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1310
-#: includes/class-ohsa-engine.php:1317
-#: includes/class-ohsa-engine.php:1323
+#: includes/class-pvsa-engine.php:1310
+#: includes/class-pvsa-engine.php:1317
+#: includes/class-pvsa-engine.php:1323
 #, php-format
 msgid "Last backup was %d days ago."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1360
-msgid "A backup plugin is active but no recent backup time could be read — verify its schedule, or report it via the ohsa_last_backup_timestamp filter."
+#: includes/class-pvsa-engine.php:1360
+msgid "A backup plugin is active but no recent backup time could be read — verify its schedule, or report it via the pvsa_last_backup_timestamp filter."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1366
-msgid "No backup plugin detected — automated backups may not be configured (host-level backups can be reported via the ohsa_last_backup_timestamp filter)."
+#: includes/class-pvsa-engine.php:1366
+msgid "No backup plugin detected — automated backups may not be configured (host-level backups can be reported via the pvsa_last_backup_timestamp filter)."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1379
+#: includes/class-pvsa-engine.php:1379
 msgid "DNS lookups unavailable; skipped."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1389
+#: includes/class-pvsa-engine.php:1389
 msgid "No sending domain to check."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1424
+#: includes/class-pvsa-engine.php:1424
 #, php-format
 msgid "SPF and DMARC present for %s."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1430
+#: includes/class-pvsa-engine.php:1430
 #, php-format
 msgid "Missing %1$s for %2$s — email may be marked as spam."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1443
+#: includes/class-pvsa-engine.php:1443
 msgid "Search engine visibility is OFF — the whole site is set to noindex."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1451
+#: includes/class-pvsa-engine.php:1451
 msgid "Could not fetch the homepage to verify indexability."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1458
+#: includes/class-pvsa-engine.php:1458
 msgid "The homepage emits a noindex robots meta tag."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1465
+#: includes/class-pvsa-engine.php:1465
 msgid "The homepage sends a noindex X-Robots-Tag header."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1470
+#: includes/class-pvsa-engine.php:1470
 msgid "Homepage is indexable."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1491
+#: includes/class-pvsa-engine.php:1491
 msgid "No tables found for this prefix; skipped."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1538
+#: includes/class-pvsa-engine.php:1538
 msgid "No non-core tables for this prefix."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1548
+#: includes/class-pvsa-engine.php:1548
 #, php-format
-msgid "%1$d non-core tables (sample: %2$s) — review for leftovers from removed plugins; allow-list expected ones via the ohsa_known_tables filter."
+msgid "%1$d non-core tables (sample: %2$s) — review for leftovers from removed plugins; allow-list expected ones via the pvsa_known_tables filter."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1554
+#: includes/class-pvsa-engine.php:1554
 #, php-format
 msgid "%1$d non-core tables present (likely active plugins): %2$s"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1572
+#: includes/class-pvsa-engine.php:1572
 msgid "WordPress core is up to date (or no update data yet)."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1586
+#: includes/class-pvsa-engine.php:1586
 msgid "WordPress core is up to date."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1605
+#: includes/class-pvsa-engine.php:1605
 #, php-format
 msgid "A WordPress maintenance/security update is available (%1$s → %2$s) — apply it promptly."
 msgstr ""
 
 #. translators: 1: current version, 2: new version
-#: includes/class-ohsa-engine.php:1612
+#: includes/class-pvsa-engine.php:1612
 #, php-format
 msgid "A WordPress feature update is available (%1$s → %2$s)."
 msgstr ""
 
 #. translators: 1: current version, 2: new version
-#: includes/class-ohsa-engine.php:1612
+#: includes/class-pvsa-engine.php:1612
 msgid "newer"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1634
+#: includes/class-pvsa-engine.php:1634
 msgid "All plugins are up to date."
 msgstr ""
 
 #. translators: %d: number of plugins
-#: includes/class-ohsa-engine.php:1640
+#: includes/class-pvsa-engine.php:1640
 #, php-format
 msgid "%d plugin update is pending."
 msgid_plural "%d plugin updates are pending."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-ohsa-engine.php:1659
+#: includes/class-pvsa-engine.php:1659
 msgid "?author=N reveals usernames"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1667
+#: includes/class-pvsa-engine.php:1667
 msgid "the REST users endpoint lists accounts"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1674
+#: includes/class-pvsa-engine.php:1674
 msgid "User enumeration is not trivially exposed."
 msgstr ""
 
 #. translators: %s: list of enumeration issues found
-#: includes/class-ohsa-engine.php:1681
+#: includes/class-pvsa-engine.php:1681
 #, php-format
 msgid "User enumeration possible: %s."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1709
+#: includes/class-pvsa-engine.php:1709
 msgid "No .env file found on disk."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1718
+#: includes/class-pvsa-engine.php:1718
 msgid "A .env file exists and is world-readable — set it to 0600/0640 and keep it out of the web root."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1725
+#: includes/class-pvsa-engine.php:1725
 msgid "A .env file exists on disk — ensure it is outside the web root and not served (see the .env HTTP probe)."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1744
+#: includes/class-pvsa-engine.php:1744
 msgid "wp-config.php not found in a standard location; skipped."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1752
+#: includes/class-pvsa-engine.php:1752
 msgid "Could not read wp-config.php permissions; skipped."
 msgstr ""
 
 #. translators: %o: octal file mode
-#: includes/class-ohsa-engine.php:1761
+#: includes/class-pvsa-engine.php:1761
 #, php-format
 msgid "wp-config.php is world-readable (%o) — set 0640 or 0600."
 msgstr ""
 
 #. translators: %o: file permissions
-#: includes/class-ohsa-engine.php:1769
+#: includes/class-pvsa-engine.php:1769
 #, php-format
 msgid "wp-config.php permissions are restrictive (%o)."
 msgstr ""
 
 #. translators: %d: number of core tables
-#: includes/class-ohsa-engine.php:1817
+#: includes/class-pvsa-engine.php:1817
 #, php-format
 msgid "All %d core database tables are present."
 msgstr ""
 
 #. translators: %s: list of missing core tables
-#: includes/class-ohsa-engine.php:1825
+#: includes/class-pvsa-engine.php:1825
 #, php-format
 msgid "Missing core database tables: %s"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1883
+#: includes/class-pvsa-engine.php:1883
 msgid "One or more WordPress secret keys are missing or using the default placeholder in wp-config.php."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1889
+#: includes/class-pvsa-engine.php:1889
 msgid "All secret keys are defined securely."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1902
+#: includes/class-pvsa-engine.php:1902
 msgid "File editing is disabled via wp-config.php."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1908
+#: includes/class-pvsa-engine.php:1908
 msgid "File editing is currently allowed. Consider defining DISALLOW_FILE_EDIT to true."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1925
+#: includes/class-pvsa-engine.php:1925
 msgid "Could not reach the uploads directory to test listing."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1933
+#: includes/class-pvsa-engine.php:1933
 msgid "Directory listing appears to be enabled on your uploads folder."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1939
+#: includes/class-pvsa-engine.php:1939
 msgid "Directory listing is safely disabled."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1952
+#: includes/class-pvsa-engine.php:1952
 msgid "Site does not use HTTPS, so FORCE_SSL_ADMIN is not applicable."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1959
+#: includes/class-pvsa-engine.php:1959
 msgid "FORCE_SSL_ADMIN is properly enabled."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1965
+#: includes/class-pvsa-engine.php:1965
 msgid "Your site uses HTTPS but FORCE_SSL_ADMIN is not enabled in wp-config.php."
 msgstr ""
 
 #. translators: %d: number of tables
-#: includes/class-ohsa-engine.php:1985
+#: includes/class-pvsa-engine.php:1985
 #, php-format
 msgid "%d tables are not using the InnoDB storage engine."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:1991
+#: includes/class-pvsa-engine.php:1991
 msgid "All database tables are using the InnoDB storage engine."
 msgstr ""
 
 #. translators: %d: number of tables
-#: includes/class-ohsa-engine.php:2011
+#: includes/class-pvsa-engine.php:2011
 #, php-format
 msgid "%d tables are not using the recommended utf8mb4 collation."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2017
+#: includes/class-pvsa-engine.php:2017
 msgid "All database tables use the recommended utf8mb4 collation."
 msgstr ""
 
 #. translators: %d: number of themes
-#: includes/class-ohsa-engine.php:2035
+#: includes/class-pvsa-engine.php:2035
 #, php-format
 msgid "You have %d theme(s) with pending updates."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2041
+#: includes/class-pvsa-engine.php:2041
 msgid "All themes are up to date."
 msgstr ""
 
 #. translators: 1: number of plugins, 2: number of themes
-#: includes/class-ohsa-engine.php:2067
+#: includes/class-pvsa-engine.php:2067
 #, php-format
 msgid "You have %1$d inactive plugins and %2$d inactive themes. Consider removing them to reduce attack surface."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2073
+#: includes/class-pvsa-engine.php:2073
 msgid "Inactive plugin and theme count is low."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2087
+#: includes/class-pvsa-engine.php:2087
 msgid "No scheduled events found."
 msgstr ""
 
 #. translators: %d: number of overdue tasks
-#: includes/class-ohsa-engine.php:2107
+#: includes/class-pvsa-engine.php:2107
 #, php-format
 msgid "%d scheduled tasks are overdue by more than 30 minutes. WP-Cron may not be running."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2113
+#: includes/class-pvsa-engine.php:2113
 msgid "WP-Cron is running normally."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2126
+#: includes/class-pvsa-engine.php:2126
 msgid "Persistent object cache is active."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2132
+#: includes/class-pvsa-engine.php:2132
 msgid "Object cache is not explicitly enabled, falling back to database safely."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2168
+#: includes/class-pvsa-engine.php:2168
 msgid "Could not determine table sizes."
 msgstr ""
 
 #. translators: 1: total size, 2: top tables list
-#: includes/class-ohsa-engine.php:2189
-#: includes/class-ohsa-engine.php:2196
+#: includes/class-pvsa-engine.php:2189
+#: includes/class-pvsa-engine.php:2196
 #, php-format
 msgid "Database size is %1$s. Top tables: %2$s"
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2214
+#: includes/class-pvsa-engine.php:2214
 msgid "Database connection uses the recommended utf8mb4 charset."
 msgstr ""
 
 #. translators: %s: current charset
-#: includes/class-ohsa-engine.php:2221
+#: includes/class-pvsa-engine.php:2221
 #, php-format
 msgid "Database connection uses \"%s\", but utf8mb4 is recommended."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2234
+#: includes/class-pvsa-engine.php:2234
 msgid "Site does not enforce HTTPS, mixed content check skipped."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2244
+#: includes/class-pvsa-engine.php:2244
 msgid "Could not fetch the homepage to verify mixed content."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2254
+#: includes/class-pvsa-engine.php:2254
 msgid "The homepage contains hardcoded HTTP asset references (mixed content)."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2260
+#: includes/class-pvsa-engine.php:2260
 msgid "No mixed content (HTTP assets) detected on the homepage."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2276
+#: includes/class-pvsa-engine.php:2276
 msgid "The REST API endpoint is unreachable or timing out."
 msgstr ""
 
-#: includes/class-ohsa-engine.php:2285
+#: includes/class-pvsa-engine.php:2285
 msgid "The WordPress REST API is reachable and responding normally."
 msgstr ""
 
 #. translators: %d: HTTP status code
-#: includes/class-ohsa-engine.php:2292
+#: includes/class-pvsa-engine.php:2292
 #, php-format
 msgid "The REST API responded with an unexpected status code (%d)."
 msgstr ""
 
-#: includes/class-ohsa-rest.php:115
+#: includes/class-pvsa-rest.php:115
 msgid "A valid token is required."
 msgstr ""
 
 #. translators: %s: site name
-#: omnihealth-site-auditor.php:106
+#: pressvitals-site-auditor.php:106
 #, php-format
-msgid "[OmniHealth: Deep Site Auditor] Health check FAILED on %s"
+msgid "[PressVitals Site Auditor] Health check FAILED on %s"
 msgstr ""
 
 #. translators: 1: pass count, 2: warn count, 3: fail count
-#: omnihealth-site-auditor.php:111
+#: pressvitals-site-auditor.php:111
 #, php-format
 msgid "Verdict: FAIL (pass: %1$d, warn: %2$d, fail: %3$d)"
 msgstr ""
 
-#: omnihealth-site-auditor.php:144
-msgid "OmniHealth: Deep Site Auditor requires PHP 7.4 or newer. The plugin was not activated."
+#: pressvitals-site-auditor.php:144
+msgid "PressVitals Site Auditor requires PHP 7.4 or newer. The plugin was not activated."
 msgstr ""
 
-#: omnihealth-site-auditor.php:145
-#: omnihealth-site-auditor.php:153
+#: pressvitals-site-auditor.php:145
+#: pressvitals-site-auditor.php:153
 msgid "Plugin activation error"
 msgstr ""
 
-#: omnihealth-site-auditor.php:152
-msgid "OmniHealth: Deep Site Auditor could not load its engine. The plugin was not activated."
+#: pressvitals-site-auditor.php:152
+msgid "PressVitals Site Auditor could not load its engine. The plugin was not activated."
 msgstr ""
-
-msgid "Security"
-msgstr "Seguridad"
-
-msgid "Performance"
-msgstr "Rendimiento"
-
-msgid "Database"
-msgstr "Base de datos"
-
-msgid "Environment"
-msgstr "Entorno"

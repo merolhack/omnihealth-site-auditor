@@ -1,26 +1,26 @@
-# OmniHealth Site Auditor — LLM Wiki
+# PressVitals Site Auditor — LLM Wiki
 
 This document serves as the project's **LLM Wiki**. It contains essential context, architectural decisions, testing paradigms, and release workflows. AI agents interacting with this repository should read this file before performing modifications to ensure they adhere to the established constraints.
 
 ## 1. Core Architecture & Philosophy
-- **Headless-First:** The plugin focuses on headless, scheduled execution via `wp-cron`. It generates a JSON report that can be exported or queried via a token-gated REST API endpoint (`/wp-json/omnihealth/v1/report`).
-- **Probe Registry:** Probes are defined in `includes/class-ohsa-engine.php` and managed via a registry hook (`ohsa_registered_checks`). 
+- **Headless-First:** The plugin focuses on headless, scheduled execution via `wp-cron`. It generates a JSON report that can be exported or queried via a token-gated REST API endpoint (`/wp-json/pressvitals/v1/report`).
+- **Probe Registry:** Probes are defined in `includes/class-pvsa-engine.php` and managed via a registry hook (`pvsa_registered_checks`). 
 - **Check Anatomy:** Each probe callback must return an array with `status` (`pass`, `warn`, `fail`) and `detail` (a localized human-readable string). The engine automatically appends `duration_ms` and `tier` to each executed check.
 
 ## 2. i18n & Localization (CRITICAL)
 - **WP.org Compliance:** The WordPress Plugin Check (PCP) scanner is extremely strict. 
-- You MUST use `__()` or `esc_html__()` with the text domain `'omnihealth-site-auditor'`.
+- You MUST use `__()` or `esc_html__()` with the text domain `'pressvitals-site-auditor'`.
 - If using `sprintf()` with placeholders, you **MUST** include a `/* translators: ... */` comment **exactly** on the line preceding the string definition, otherwise PHPCS/PCP will fail.
-- **Pipeline:** `.pot` files are generated via `composer make-pot` (`wp i18n make-pot . languages/omnihealth-site-auditor.pot`). 
+- **Pipeline:** `.pot` files are generated via `composer make-pot` (`wp i18n make-pot . languages/pressvitals-site-auditor.pot`). 
 
 ## 3. Environment & WSL Constraints
 - **Docker Executions:** Running composer commands directly in the WSL container often fails due to `dubious ownership` errors. Use the WordPress docker container instead:
   ```bash
-  docker compose exec -w /var/www/html/wp-content/plugins/omnihealth-site-auditor wp-latest php /var/www/html/composer.phar <command>
+  docker compose exec -w /var/www/html/wp-content/plugins/pressvitals-site-auditor wp-latest php /var/www/html/composer.phar <command>
   ```
 - **Git Push Authentication:** The environment frequently hangs on interactive authentication prompts. Use the explicit PAT URL when pushing:
   ```bash
-  git push https://merolhack:<PAT>@github.com/merolhack/omnihealth-site-auditor.git
+  git push https://merolhack:<PAT>@github.com/merolhack/pressvitals-site-auditor.git
   ```
 
 ## 4. Testing & CI Pipeline

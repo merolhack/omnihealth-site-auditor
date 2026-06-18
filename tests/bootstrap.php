@@ -6,7 +6,7 @@
  *   bin/install-wp-tests.sh wordpress_test root '' localhost latest
  * then run `composer test` (or `phpunit`).
  *
- * @package OmniHealthSiteAuditor
+ * @package PressVitalsSiteAuditor
  */
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
@@ -34,9 +34,9 @@ require_once $_functions;
 /**
  * Load the plugin under test before WordPress finishes booting.
  */
-function _ohsa_manually_load_plugin() {
-	require dirname( __DIR__ ) . '/omnihealth-site-auditor.php';
+function _pvsa_manually_load_plugin() {
+	require dirname( __DIR__ ) . '/pressvitals-site-auditor.php';
 }
-tests_add_filter( 'muplugins_loaded', '_ohsa_manually_load_plugin' );
+tests_add_filter( 'muplugins_loaded', '_pvsa_manually_load_plugin' );
 
 require $_tests_dir . '/includes/bootstrap.php';

@@ -1,32 +1,32 @@
 <?php
 /**
- * Admin UI — Tools → OmniHealth: Deep Site Auditor.
+ * Admin UI — Tools → PressVitals Site Auditor.
  *
  * Renders the last stored report grouped by category, exposes a Settings-API
  * form for thresholds + alert email, and "Run now" / "Rotate token" actions.
  * Every action is nonce-protected and capability-gated; all output is escaped.
  *
- * @package OmniHealthSiteAuditor
+ * @package PressVitalsSiteAuditor
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class OHSA_Admin {
+class PVSA_Admin {
 
-	const PAGE_SLUG      = 'omnihealth-site-auditor';
-	const SETTINGS_GROUP = 'ohsa_settings_group';
+	const PAGE_SLUG      = 'pressvitals-site-auditor';
+	const SETTINGS_GROUP = 'pvsa_settings_group';
 
 	/**
-	 * @var OHSA_Engine
+	 * @var PVSA_Engine
 	 */
 	private $engine;
 
 	/**
-	 * @param OHSA_Engine $engine Health-check engine.
+	 * @param PVSA_Engine $engine Health-check engine.
 	 */
-	public function __construct( OHSA_Engine $engine ) {
+	public function __construct( PVSA_Engine $engine ) {
 		$this->engine = $engine;
 	}
 
@@ -36,10 +36,10 @@ class OHSA_Admin {
 	public function init() {
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
-		add_action( 'admin_post_ohsa_run_now', array( $this, 'handle_run_now' ) );
-		add_action( 'admin_post_ohsa_rotate_token', array( $this, 'handle_rotate_token' ) );
-		add_action( 'admin_post_ohsa_export_json', array( $this, 'handle_export_json' ) );
-		add_action( 'admin_post_ohsa_export_csv', array( $this, 'handle_export_csv' ) );
+		add_action( 'admin_post_pvsa_run_now', array( $this, 'handle_run_now' ) );
+		add_action( 'admin_post_pvsa_rotate_token', array( $this, 'handle_rotate_token' ) );
+		add_action( 'admin_post_pvsa_export_json', array( $this, 'handle_export_json' ) );
+		add_action( 'admin_post_pvsa_export_csv', array( $this, 'handle_export_csv' ) );
 	}
 
 	/**
@@ -47,8 +47,8 @@ class OHSA_Admin {
 	 */
 	public function register_menu() {
 		add_management_page(
-			__( 'OmniHealth: Deep Site Auditor', 'omnihealth-site-auditor' ),
-			__( 'OmniHealth: Deep Site Auditor', 'omnihealth-site-auditor' ),
+			__( 'PressVitals Site Auditor', 'pressvitals-site-auditor' ),
+			__( 'PressVitals Site Auditor', 'pressvitals-site-auditor' ),
 			'manage_options',
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -61,26 +61,26 @@ class OHSA_Admin {
 	public function register_settings() {
 		register_setting(
 			self::SETTINGS_GROUP,
-			OHSA_OPTION_SETTINGS,
+			PVSA_OPTION_SETTINGS,
 			array(
 				'type'              => 'array',
 				'sanitize_callback' => array( $this, 'sanitize_settings' ),
-				'default'           => OHSA_Engine::default_settings(),
+				'default'           => PVSA_Engine::default_settings(),
 			)
 		);
 
 		add_settings_section(
-			'ohsa_thresholds',
-			__( 'Thresholds & alerts', 'omnihealth-site-auditor' ),
+			'pvsa_thresholds',
+			__( 'Thresholds & alerts', 'pressvitals-site-auditor' ),
 			'__return_false',
 			self::PAGE_SLUG
 		);
 
 		$fields = array(
-			'error_log_warn_mb' => __( 'Error log warn (MB)', 'omnihealth-site-auditor' ),
-			'error_log_fail_mb' => __( 'Error log fail (MB)', 'omnihealth-site-auditor' ),
-			'autoload_warn_mb'  => __( 'Autoload warn (MB)', 'omnihealth-site-auditor' ),
-			'autoload_fail_mb'  => __( 'Autoload fail (MB)', 'omnihealth-site-auditor' ),
+			'error_log_warn_mb' => __( 'Error log warn (MB)', 'pressvitals-site-auditor' ),
+			'error_log_fail_mb' => __( 'Error log fail (MB)', 'pressvitals-site-auditor' ),
+			'autoload_warn_mb'  => __( 'Autoload warn (MB)', 'pressvitals-site-auditor' ),
+			'autoload_fail_mb'  => __( 'Autoload fail (MB)', 'pressvitals-site-auditor' ),
 		);
 		foreach ( $fields as $key => $label ) {
 			add_settings_field(
@@ -88,17 +88,17 @@ class OHSA_Admin {
 				$label,
 				array( $this, 'render_number_field' ),
 				self::PAGE_SLUG,
-				'ohsa_thresholds',
+				'pvsa_thresholds',
 				array( 'key' => $key )
 			);
 		}
 
 		add_settings_field(
 			'alert_email',
-			__( 'Alert email', 'omnihealth-site-auditor' ),
+			__( 'Alert email', 'pressvitals-site-auditor' ),
 			array( $this, 'render_email_field' ),
 			self::PAGE_SLUG,
-			'ohsa_thresholds'
+			'pvsa_thresholds'
 		);
 	}
 
@@ -110,7 +110,7 @@ class OHSA_Admin {
 	 */
 	public function sanitize_settings( $input ) {
 		$input    = is_array( $input ) ? $input : array();
-		$defaults = OHSA_Engine::default_settings();
+		$defaults = PVSA_Engine::default_settings();
 		$out      = array();
 
 		foreach ( array( 'error_log_warn_mb', 'error_log_fail_mb', 'autoload_warn_mb', 'autoload_fail_mb' ) as $key ) {
@@ -131,10 +131,10 @@ class OHSA_Admin {
 	 */
 	public function render_number_field( $args ) {
 		$key   = isset( $args['key'] ) ? sanitize_key( $args['key'] ) : '';
-		$value = OHSA_Engine::get_setting( $key, '' );
+		$value = PVSA_Engine::get_setting( $key, '' );
 		printf(
 			'<input type="number" step="0.1" min="0" name="%1$s[%2$s]" value="%3$s" class="small-text" />',
-			esc_attr( OHSA_OPTION_SETTINGS ),
+			esc_attr( PVSA_OPTION_SETTINGS ),
 			esc_attr( $key ),
 			esc_attr( (string) $value )
 		);
@@ -144,10 +144,10 @@ class OHSA_Admin {
 	 * Render the alert-email field.
 	 */
 	public function render_email_field() {
-		$value = OHSA_Engine::get_setting( 'alert_email', get_option( 'admin_email' ) );
+		$value = PVSA_Engine::get_setting( 'alert_email', get_option( 'admin_email' ) );
 		printf(
 			'<input type="email" name="%1$s[alert_email]" value="%2$s" class="regular-text" />',
-			esc_attr( OHSA_OPTION_SETTINGS ),
+			esc_attr( PVSA_OPTION_SETTINGS ),
 			esc_attr( (string) $value )
 		);
 	}
@@ -157,14 +157,14 @@ class OHSA_Admin {
 	 */
 	public function handle_run_now() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'omnihealth-site-auditor' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'pressvitals-site-auditor' ) );
 		}
-		check_admin_referer( 'ohsa_run_now' );
+		check_admin_referer( 'pvsa_run_now' );
 
 		$report = $this->engine->run();
-		update_option( OHSA_OPTION_REPORT, $report, false );
+		update_option( PVSA_OPTION_REPORT, $report, false );
 
-		wp_safe_redirect( add_query_arg( 'ohsa_msg', 'ran', admin_url( 'tools.php?page=' . self::PAGE_SLUG ) ) );
+		wp_safe_redirect( add_query_arg( 'pvsa_msg', 'ran', admin_url( 'tools.php?page=' . self::PAGE_SLUG ) ) );
 		exit;
 	}
 
@@ -173,13 +173,13 @@ class OHSA_Admin {
 	 */
 	public function handle_rotate_token() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'omnihealth-site-auditor' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'pressvitals-site-auditor' ) );
 		}
-		check_admin_referer( 'ohsa_rotate_token' );
+		check_admin_referer( 'pvsa_rotate_token' );
 
-		update_option( OHSA_OPTION_TOKEN, bin2hex( random_bytes( 16 ) ) );
+		update_option( PVSA_OPTION_TOKEN, bin2hex( random_bytes( 16 ) ) );
 
-		wp_safe_redirect( add_query_arg( 'ohsa_msg', 'rotated', admin_url( 'tools.php?page=' . self::PAGE_SLUG ) ) );
+		wp_safe_redirect( add_query_arg( 'pvsa_msg', 'rotated', admin_url( 'tools.php?page=' . self::PAGE_SLUG ) ) );
 		exit;
 	}
 
@@ -188,17 +188,17 @@ class OHSA_Admin {
 	 */
 	public function handle_export_json() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'omnihealth-site-auditor' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'pressvitals-site-auditor' ) );
 		}
-		check_admin_referer( 'ohsa_export_json' );
+		check_admin_referer( 'pvsa_export_json' );
 
-		$report = get_option( OHSA_OPTION_REPORT );
+		$report = get_option( PVSA_OPTION_REPORT );
 		if ( ! is_array( $report ) ) {
 			$report = array();
 		}
 
 		header( 'Content-Type: application/json; charset=utf-8' );
-		header( 'Content-Disposition: attachment; filename="omnihealth-report-' . gmdate( 'Ymd-His' ) . '.json"' );
+		header( 'Content-Disposition: attachment; filename="pressvitals-report-' . gmdate( 'Ymd-His' ) . '.json"' );
 		echo wp_json_encode( $report, JSON_PRETTY_PRINT );
 		exit;
 	}
@@ -208,17 +208,17 @@ class OHSA_Admin {
 	 */
 	public function handle_export_csv() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'omnihealth-site-auditor' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'pressvitals-site-auditor' ) );
 		}
-		check_admin_referer( 'ohsa_export_csv' );
+		check_admin_referer( 'pvsa_export_csv' );
 
-		$report = get_option( OHSA_OPTION_REPORT );
+		$report = get_option( PVSA_OPTION_REPORT );
 		if ( ! is_array( $report ) || empty( $report['checks'] ) ) {
-			wp_die( esc_html__( 'No report available to export.', 'omnihealth-site-auditor' ) );
+			wp_die( esc_html__( 'No report available to export.', 'pressvitals-site-auditor' ) );
 		}
 
 		header( 'Content-Type: text/csv; charset=utf-8' );
-		header( 'Content-Disposition: attachment; filename="omnihealth-report-' . gmdate( 'Ymd-His' ) . '.csv"' );
+		header( 'Content-Disposition: attachment; filename="pressvitals-report-' . gmdate( 'Ymd-His' ) . '.csv"' );
 
 		$out = '"Group","Label","ID","Tier","Status","Duration (ms)","Detail"' . "\r\n";
 
@@ -256,49 +256,49 @@ class OHSA_Admin {
 	 */
 	public function render_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You are not allowed to view this page.', 'omnihealth-site-auditor' ) );
+			wp_die( esc_html__( 'You are not allowed to view this page.', 'pressvitals-site-auditor' ) );
 		}
 
-		$report = get_option( OHSA_OPTION_REPORT );
-		$token  = (string) get_option( OHSA_OPTION_TOKEN, '' );
-		$msg    = isset( $_GET['ohsa_msg'] ) ? sanitize_key( wp_unslash( $_GET['ohsa_msg'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$report = get_option( PVSA_OPTION_REPORT );
+		$token  = (string) get_option( PVSA_OPTION_TOKEN, '' );
+		$msg    = isset( $_GET['pvsa_msg'] ) ? sanitize_key( wp_unslash( $_GET['pvsa_msg'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$action = esc_url( admin_url( 'admin-post.php' ) );
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'OmniHealth: Deep Site Auditor', 'omnihealth-site-auditor' ); ?></h1>
+			<h1><?php esc_html_e( 'PressVitals Site Auditor', 'pressvitals-site-auditor' ); ?></h1>
 			<p class="description" style="max-width:780px;">
-				<?php esc_html_e( 'Headless-first, scheduled monitoring: severity-tiered probes, email alerts, and a token-gated REST report. It complements WordPress core’s built-in Site Health by adding automation, alerting, and security/ops audit probes core does not run.', 'omnihealth-site-auditor' ); ?>
-				<a href="<?php echo esc_url( admin_url( 'site-health.php' ) ); ?>"><?php esc_html_e( 'Open the built-in Site Health screen', 'omnihealth-site-auditor' ); ?></a>
+				<?php esc_html_e( 'Headless-first, scheduled monitoring: severity-tiered probes, email alerts, and a token-gated REST report. It complements WordPress core’s built-in Site Health by adding automation, alerting, and security/ops audit probes core does not run.', 'pressvitals-site-auditor' ); ?>
+				<a href="<?php echo esc_url( admin_url( 'site-health.php' ) ); ?>"><?php esc_html_e( 'Open the built-in Site Health screen', 'pressvitals-site-auditor' ); ?></a>
 			</p>
 
 			<?php if ( 'ran' === $msg ) : ?>
-				<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Health check executed.', 'omnihealth-site-auditor' ); ?></p></div>
+				<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Health check executed.', 'pressvitals-site-auditor' ); ?></p></div>
 			<?php elseif ( 'rotated' === $msg ) : ?>
-				<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Token rotated. Update any external probe that uses it.', 'omnihealth-site-auditor' ); ?></p></div>
+				<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Token rotated. Update any external probe that uses it.', 'pressvitals-site-auditor' ); ?></p></div>
 			<?php endif; ?>
 
 			<p>
 				<form method="post" action="<?php echo $action; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above. ?>" style="display:inline;">
-					<input type="hidden" name="action" value="ohsa_run_now" />
-					<?php wp_nonce_field( 'ohsa_run_now' ); ?>
-					<button type="submit" class="button button-primary"><?php esc_html_e( 'Run now', 'omnihealth-site-auditor' ); ?></button>
+					<input type="hidden" name="action" value="pvsa_run_now" />
+					<?php wp_nonce_field( 'pvsa_run_now' ); ?>
+					<button type="submit" class="button button-primary"><?php esc_html_e( 'Run now', 'pressvitals-site-auditor' ); ?></button>
 				</form>
 				<form method="post" action="<?php echo $action; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above. ?>" style="display:inline; margin-left:10px;">
-					<input type="hidden" name="action" value="ohsa_export_json" />
-					<?php wp_nonce_field( 'ohsa_export_json' ); ?>
-					<button type="submit" class="button"><?php esc_html_e( 'Export JSON', 'omnihealth-site-auditor' ); ?></button>
+					<input type="hidden" name="action" value="pvsa_export_json" />
+					<?php wp_nonce_field( 'pvsa_export_json' ); ?>
+					<button type="submit" class="button"><?php esc_html_e( 'Export JSON', 'pressvitals-site-auditor' ); ?></button>
 				</form>
 				<form method="post" action="<?php echo $action; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above. ?>" style="display:inline; margin-left:10px;">
-					<input type="hidden" name="action" value="ohsa_export_csv" />
-					<?php wp_nonce_field( 'ohsa_export_csv' ); ?>
-					<button type="submit" class="button"><?php esc_html_e( 'Export CSV', 'omnihealth-site-auditor' ); ?></button>
+					<input type="hidden" name="action" value="pvsa_export_csv" />
+					<?php wp_nonce_field( 'pvsa_export_csv' ); ?>
+					<button type="submit" class="button"><?php esc_html_e( 'Export CSV', 'pressvitals-site-auditor' ); ?></button>
 				</form>
 			</p>
 
 			<?php $this->render_report( is_array( $report ) ? $report : array() ); ?>
 
 			<hr />
-			<h2><?php esc_html_e( 'Settings', 'omnihealth-site-auditor' ); ?></h2>
+			<h2><?php esc_html_e( 'Settings', 'pressvitals-site-auditor' ); ?></h2>
 			<form method="post" action="options.php">
 				<?php
 				settings_fields( self::SETTINGS_GROUP );
@@ -308,14 +308,14 @@ class OHSA_Admin {
 			</form>
 
 			<hr />
-			<h2><?php esc_html_e( 'External probe token', 'omnihealth-site-auditor' ); ?></h2>
-			<p><?php esc_html_e( 'Used by external/CI monitors to call the report endpoint:', 'omnihealth-site-auditor' ); ?></p>
-			<p><code><?php echo esc_html( rest_url( OHSA_REST::NAMESPACE . '/report' ) ); ?>?token=<?php echo esc_html( $token ); ?></code></p>
+			<h2><?php esc_html_e( 'External probe token', 'pressvitals-site-auditor' ); ?></h2>
+			<p><?php esc_html_e( 'Used by external/CI monitors to call the report endpoint:', 'pressvitals-site-auditor' ); ?></p>
+			<p><code><?php echo esc_html( rest_url( PVSA_REST::NAMESPACE . '/report' ) ); ?>?token=<?php echo esc_html( $token ); ?></code></p>
 			<form method="post" action="<?php echo $action; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above. ?>">
-				<input type="hidden" name="action" value="ohsa_rotate_token" />
-				<?php wp_nonce_field( 'ohsa_rotate_token' ); ?>
-				<button type="submit" class="button" onclick="return confirm('<?php echo esc_js( __( 'Rotate the token? External probes using the old one will stop working.', 'omnihealth-site-auditor' ) ); ?>');">
-					<?php esc_html_e( 'Rotate token', 'omnihealth-site-auditor' ); ?>
+				<input type="hidden" name="action" value="pvsa_rotate_token" />
+				<?php wp_nonce_field( 'pvsa_rotate_token' ); ?>
+				<button type="submit" class="button" onclick="return confirm('<?php echo esc_js( __( 'Rotate the token? External probes using the old one will stop working.', 'pressvitals-site-auditor' ) ); ?>');">
+					<?php esc_html_e( 'Rotate token', 'pressvitals-site-auditor' ); ?>
 				</button>
 			</form>
 		</div>
@@ -325,11 +325,11 @@ class OHSA_Admin {
 	/**
 	 * Render the report grouped by functional category.
 	 *
-	 * @param array $report Report from OHSA_Engine::run().
+	 * @param array $report Report from PVSA_Engine::run().
 	 */
 	private function render_report( array $report ) {
 		if ( empty( $report['checks'] ) ) {
-			echo '<div class="notice notice-info"><p>' . esc_html__( 'No report yet. Click "Run now".', 'omnihealth-site-auditor' ) . '</p></div>';
+			echo '<div class="notice notice-info"><p>' . esc_html__( 'No report yet. Click "Run now".', 'pressvitals-site-auditor' ) . '</p></div>';
 			return;
 		}
 
@@ -339,7 +339,7 @@ class OHSA_Admin {
 			. esc_html(
 				sprintf(
 					/* translators: 1: Number of passing checks, 2: Number of warning checks, 3: Number of failing checks */
-					__( '%1$d pass, %2$d warn, %3$d fail', 'omnihealth-site-auditor' ),
+					__( '%1$d pass, %2$d warn, %3$d fail', 'pressvitals-site-auditor' ),
 					(int) $report['pass'],
 					(int) $report['warn'],
 					(int) $report['fail']
@@ -350,12 +350,12 @@ class OHSA_Admin {
 		// Bucket by group.
 		$buckets = array();
 		foreach ( $report['checks'] as $id => $check ) {
-			$group                    = isset( $check['group'] ) ? (string) $check['group'] : __( 'Other', 'omnihealth-site-auditor' );
+			$group                    = isset( $check['group'] ) ? (string) $check['group'] : __( 'Other', 'pressvitals-site-auditor' );
 			$buckets[ $group ][ $id ] = $check;
 		}
 
 		// Order: known groups first, then extras alphabetically.
-		$order  = OHSA_Engine::group_order();
+		$order  = PVSA_Engine::group_order();
 		$extras = array_diff( array_keys( $buckets ), $order );
 		sort( $extras );
 		$ordered = array_merge( array_intersect( $order, array_keys( $buckets ) ), $extras );
@@ -404,11 +404,11 @@ class OHSA_Admin {
 			$group_id = 'ohsa-group-' . sanitize_title( $group );
 			echo '<h3 id="' . esc_attr( $group_id ) . '" style="scroll-margin-top:40px; cursor:pointer;" onclick="var t=document.getElementById(\'' . esc_js( $group_id ) . '-table\'); t.style.display=(t.style.display===\'none\'?\'\':\'none\'); localStorage.setItem(\'' . esc_js( $group_id ) . '\', t.style.display);">' . esc_html( $group ) . ' <span class="dashicons dashicons-arrow-down-alt2" style="font-size:16px;line-height:1.5;"></span></h3>';
 			echo '<table id="' . esc_attr( $group_id ) . '-table" class="widefat striped" style="display:table;"><thead><tr>'
-				. '<th>' . esc_html__( 'Status', 'omnihealth-site-auditor' ) . '</th>'
-				. '<th>' . esc_html__( 'Check', 'omnihealth-site-auditor' ) . '</th>'
-				. '<th>' . esc_html__( 'Tier', 'omnihealth-site-auditor' ) . '</th>'
-				. '<th>' . esc_html__( 'Time', 'omnihealth-site-auditor' ) . '</th>'
-				. '<th>' . esc_html__( 'Detail', 'omnihealth-site-auditor' ) . '</th>'
+				. '<th>' . esc_html__( 'Status', 'pressvitals-site-auditor' ) . '</th>'
+				. '<th>' . esc_html__( 'Check', 'pressvitals-site-auditor' ) . '</th>'
+				. '<th>' . esc_html__( 'Tier', 'pressvitals-site-auditor' ) . '</th>'
+				. '<th>' . esc_html__( 'Time', 'pressvitals-site-auditor' ) . '</th>'
+				. '<th>' . esc_html__( 'Detail', 'pressvitals-site-auditor' ) . '</th>'
 				. '</tr></thead><tbody>';
 			foreach ( $rows as $check ) {
 				$tier = isset( $check['tier'] ) ? $check['tier'] : '-';

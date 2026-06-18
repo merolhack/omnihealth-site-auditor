@@ -1,10 +1,10 @@
-# OmniHealth: Deep Site Auditor
+# PressVitals Site Auditor
 
-> This file provides an overview of the OmniHealth: Deep Site Auditor project to help AI assistants (LLMs) understand the codebase, architecture, and recent historical context.
+> This file provides an overview of the PressVitals Site Auditor project to help AI assistants (LLMs) understand the codebase, architecture, and recent historical context.
 
 ## Project Overview
 
-OmniHealth is a headless-first WordPress diagnostic engine. It provides 22+ proactive probes for performance, security, and database health. Unlike WordPress core's built-in Site Health feature which is admin-only and on-demand, OmniHealth is built for continuous, automated, machine-readable monitoring. 
+PressVitals is a headless-first WordPress diagnostic engine. It provides 22+ proactive probes for performance, security, and database health. Unlike WordPress core's built-in Site Health feature which is admin-only and on-demand, PressVitals is built for continuous, automated, machine-readable monitoring. 
 
 It exposes:
 - A no-auth `/ping` liveness probe.
@@ -14,10 +14,10 @@ It exposes:
 
 ## Architecture
 
-- **Engine (`class-ohsa-engine.php`)**: The core class containing all built-in checks (e.g., `check_ssl_cert_expiry`, `check_security_headers`, `check_wp_config_permissions`). It handles execution, error-catching, and thresholds.
-- **REST API (`class-ohsa-rest.php`)**: Registers the `/ping` and `/report` routes.
-- **Cron (`class-ohsa-cron.php`)**: Runs daily checks and triggers email alerts on failing verdicts.
-- **Admin UI (`class-ohsa-admin.php`)**: Registers the **Tools → OmniHealth: Deep Site Auditor** page, displaying the most recent report and allowing users to configure thresholds or trigger manual runs.
+- **Engine (`class-pvsa-engine.php`)**: The core class containing all built-in checks (e.g., `check_ssl_cert_expiry`, `check_security_headers`, `check_wp_config_permissions`). It handles execution, error-catching, and thresholds.
+- **REST API (`class-pvsa-rest.php`)**: Registers the `/ping` and `/report` routes.
+- **Cron (`class-pvsa-cron.php`)**: Runs daily checks and triggers email alerts on failing verdicts.
+- **Admin UI (`class-pvsa-admin.php`)**: Registers the **Tools → PressVitals Site Auditor** page, displaying the most recent report and allowing users to configure thresholds or trigger manual runs.
 
 ## Local Development & Docker Testing
 

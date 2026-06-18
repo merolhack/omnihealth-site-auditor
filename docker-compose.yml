@@ -1,5 +1,5 @@
 # Side-by-side WordPress installs at fixed WordPress x PHP combinations, for
-# manual / exploratory testing of OmniHealth: Deep Site Auditor.
+# manual / exploratory testing of PressVitals Site Auditor.
 #
 # NOT used by CI and NOT shipped to WordPress.org (excluded via .distignore).
 # For the automated PHPUnit suite use wp-env / `composer test` instead.
@@ -10,7 +10,7 @@
 #   - WP 6.7 / PHP 8.3  -> http://localhost:8083
 #   - WP 6.4 / PHP 8.1  -> http://localhost:8081
 #   - WP 6.3 / PHP 7.4  -> http://localhost:8074
-# Activate the plugin on each (Plugins -> OmniHealth: Deep Site Auditor) and
+# Activate the plugin on each (Plugins -> PressVitals Site Auditor) and
 # compare behaviour across versions. Tear down with `docker compose down`
 # (add `-v` to also wipe the databases and start fresh).
 #
@@ -49,7 +49,7 @@ services:
       WORDPRESS_DEBUG: "1"
     volumes:
       - wp_latest:/var/www/html
-      - ./:/var/www/html/wp-content/plugins/omnihealth-site-auditor
+      - ./:/var/www/html/wp-content/plugins/pressvitals-site-auditor
 
   wp-mid:
     image: wordpress:6.4-php8.1-apache
@@ -66,7 +66,7 @@ services:
       WORDPRESS_DEBUG: "1"
     volumes:
       - wp_mid:/var/www/html
-      - ./:/var/www/html/wp-content/plugins/omnihealth-site-auditor
+      - ./:/var/www/html/wp-content/plugins/pressvitals-site-auditor
 
   wp-legacy:
     image: wordpress:6.0-php7.4-apache
@@ -83,7 +83,7 @@ services:
       WORDPRESS_DEBUG: "1"
     volumes:
       - wp_legacy:/var/www/html
-      - ./:/var/www/html/wp-content/plugins/omnihealth-site-auditor
+      - ./:/var/www/html/wp-content/plugins/pressvitals-site-auditor
 
 volumes:
   db_data:

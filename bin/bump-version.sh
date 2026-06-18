@@ -9,7 +9,7 @@ if [ -z "$1" ]; then
 fi
 
 NEW_VERSION=$1
-MAIN_FILE="omnihealth-site-auditor.php"
+MAIN_FILE="pressvitals-site-auditor.php"
 README_FILE="readme.txt"
 
 if [ ! -f "$MAIN_FILE" ]; then
@@ -21,7 +21,7 @@ echo "Bumping version to $NEW_VERSION..."
 
 # Update main plugin file
 sed -i -E "s/Version:[ \t]+[0-9]+\.[0-9]+\.[0-9]+/Version:           $NEW_VERSION/" "$MAIN_FILE"
-sed -i -E "s/define\( 'OHSA_VERSION', '[0-9]+\.[0-9]+\.[0-9]+' \);/define( 'OHSA_VERSION', '$NEW_VERSION' );/" "$MAIN_FILE"
+sed -i -E "s/define\( 'PVSA_VERSION', '[0-9]+\.[0-9]+\.[0-9]+' \);/define( 'PVSA_VERSION', '$NEW_VERSION' );/" "$MAIN_FILE"
 
 # Update readme.txt
 if [ -f "$README_FILE" ]; then
