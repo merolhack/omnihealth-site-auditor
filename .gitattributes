@@ -16,6 +16,17 @@
 /.github       export-ignore
 /tests         export-ignore
 /bin           export-ignore
+/dl2.sh        export-ignore
 /.wp-env.json  export-ignore
 /docker-compose.yml export-ignore
 /.docker       export-ignore
+/rebrand.php   export-ignore
+/fix_*.php     export-ignore
+/composer.*    export-ignore
+/phpcs.xml     export-ignore
+/phpunit.xml.dist export-ignore
+/*.md          export-ignore
+/*.zip         export-ignore
+/llms.txt      export-ignore
+/.gitignore    export-ignore
+/.gitattributes export-ignore
