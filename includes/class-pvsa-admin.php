@@ -36,10 +36,30 @@ class PVSA_Admin {
 	public function init() {
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'admin_post_pvsa_run_now', array( $this, 'handle_run_now' ) );
 		add_action( 'admin_post_pvsa_rotate_token', array( $this, 'handle_rotate_token' ) );
 		add_action( 'admin_post_pvsa_export_json', array( $this, 'handle_export_json' ) );
 		add_action( 'admin_post_pvsa_export_csv', array( $this, 'handle_export_csv' ) );
+	}
+
+	/**
+	 * Enqueue admin scripts.
+	 *
+	 * @param string $hook The current admin page.
+	 */
+	public function enqueue_scripts( $hook ) {
+		if ( 'tools_page_' . self::PAGE_SLUG !== $hook ) {
+			return;
+		}
+
+		wp_enqueue_script(
+			'pvsa-admin',
+			plugins_url( 'assets/js/pvsa-admin.js', PVSA_PLUGIN_FILE ),
+			array(),
+			PVSA_VERSION,
+			true
+		);
 	}
 
 	/**
@@ -402,7 +422,7 @@ class PVSA_Admin {
 			);
 
 			$group_id = 'ohsa-group-' . sanitize_title( $group );
-			echo '<h3 id="' . esc_attr( $group_id ) . '" style="scroll-margin-top:40px; cursor:pointer;" onclick="var t=document.getElementById(\'' . esc_js( $group_id ) . '-table\'); t.style.display=(t.style.display===\'none\'?\'\':\'none\'); localStorage.setItem(\'' . esc_js( $group_id ) . '\', t.style.display);">' . esc_html( $group ) . ' <span class="dashicons dashicons-arrow-down-alt2" style="font-size:16px;line-height:1.5;"></span></h3>';
+			echo '<h3 id="' . esc_attr( $group_id ) . '" style="scroll-margin-top:40px; cursor:pointer;">' . esc_html( $group ) . ' <span class="dashicons dashicons-arrow-down-alt2" style="font-size:16px;line-height:1.5;"></span></h3>';
 			echo '<table id="' . esc_attr( $group_id ) . '-table" class="widefat striped" style="display:table;"><thead><tr>'
 				. '<th>' . esc_html__( 'Status', 'pressvitals-site-auditor' ) . '</th>'
 				. '<th>' . esc_html__( 'Check', 'pressvitals-site-auditor' ) . '</th>'
@@ -420,7 +440,6 @@ class PVSA_Admin {
 					. '<td>' . esc_html( $check['detail'] ) . '</td></tr>';
 			}
 			echo '</tbody></table>';
-			echo '<script>if(localStorage.getItem(\'' . esc_js( $group_id ) . '\')===\'none\'){document.getElementById(\'' . esc_js( $group_id ) . '-table\').style.display=\'none\';}</script>';
 		}
 	}
 }
