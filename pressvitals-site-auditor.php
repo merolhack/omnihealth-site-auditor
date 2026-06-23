@@ -37,7 +37,6 @@ require_once PVSA_PLUGIN_DIR . 'includes/class-pvsa-admin.php';
  * Boot the plugin.
  */
 function pvsa_init() {
-	load_plugin_textdomain( 'pressvitals-site-auditor', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
 	// Database Migrations & Versioning
 	$db_version = get_option( 'pvsa_db_version', '0.0.0' );

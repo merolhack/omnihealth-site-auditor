@@ -446,19 +446,19 @@ class PVSA_Admin {
 				$tier = isset( $check['tier'] ) ? $check['tier'] : '-';
 				$time = isset( $check['duration_ms'] ) ? $check['duration_ms'] . 'ms' : '-';
 				
-				$row_bg = '';
+				$row_bg_color = '';
 				$status_color = '';
 				if ( 'fail' === $check['status'] ) {
-					$row_bg = ' style="background-color: #fcf0f1;"';
-					$status_color = 'color: #d63638;';
+					$row_bg_color = '#fcf0f1';
+					$status_color = '#d63638';
 				} elseif ( 'warn' === $check['status'] ) {
-					$row_bg = ' style="background-color: #fdf6e6;"';
-					$status_color = 'color: #d97706;';
+					$row_bg_color = '#fdf6e6';
+					$status_color = '#d97706';
 				} else {
-					$status_color = 'color: #16a34a;';
+					$status_color = '#16a34a';
 				}
 
-				echo '<tr' . $row_bg . '><td style="' . $status_color . '"><strong>' . esc_html( strtoupper( $check['status'] ) ) . '</strong></td>'
+				echo '<tr' . ( $row_bg_color ? ' style="background-color: ' . esc_attr( $row_bg_color ) . ';"' : '' ) . '><td style="color: ' . esc_attr( $status_color ) . ';"><strong>' . esc_html( strtoupper( $check['status'] ) ) . '</strong></td>'
 					. '<td>' . esc_html( $check['label'] ) . '</td>'
 					. '<td>' . esc_html( $tier ) . '</td>'
 					. '<td>' . esc_html( $time ) . '</td>'

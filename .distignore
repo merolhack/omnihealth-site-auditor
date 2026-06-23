@@ -44,3 +44,8 @@
 *.sh
 /report_*.txt
 /LLM_WIKI.md
+
+AGENTS.md
+index.md
+*.json
+*.json:Zone.Identifier
