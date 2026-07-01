@@ -12,6 +12,7 @@
 # Editor cruft
 *.bak
 *.map
+*Zone.Identifier*
 
 # Testing and scratch files
 test*.php

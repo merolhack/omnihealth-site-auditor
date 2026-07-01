@@ -48,4 +48,4 @@
 AGENTS.md
 index.md
 *.json
-*.json:Zone.Identifier
+*Zone.Identifier*

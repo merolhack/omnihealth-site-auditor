@@ -1,5 +1,9 @@
 # History & Changelog
 
+## 2026-07-01
+- **WordPress.org Release Preparation:** Formatted and integrated official directory assets (`icon-256x256.png`, `icon-128x128.png`, `banner-1544x500.png`, `banner-772x250.png`) into `.wordpress-org/` to support automated deployment via GitHub Actions (`10up/action-wordpress-plugin-deploy`).
+- **Build Cleanliness:** Added `*Zone.Identifier*` to both `.gitignore` and `.distignore` to prevent Windows NTFS alternate data stream files from leaking into Git repositories or SVN distribution archives.
+
 ## 2026-06-22
 - **Code Standards:** Replaced inline JavaScript in the admin UI with properly registered and enqueued scripts via `wp_enqueue_script` to comply with WordPress.org directory guidelines.
 - **Plugin Directory:** Requested WP.org plugin reviewers to change the plugin slug to match the rebranded display name to resolve the text domain mismatch.
